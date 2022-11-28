@@ -5,15 +5,22 @@ import cairocffi as cairo
 import os
 import svgwrite
 from IPython.display import SVG, display, Image
-from PIL import Image, ImageDraw, Image
+from PIL import Image, ImageDraw
 from cairosvg import svg2png
 import imageio as iio
 
 def vector_to_raster(vector_images, side=28, line_diameter=16, padding=16, bg_color=(0,0,0), fg_color=(1,1,1)):
     """
-    padding and line_diameter are relative to the original 256x256 image.
-    """
+    Padding and line_diameter are relative to the original 256x256 image.
+    ...
 
+    Parameters
+    -------
+
+    Returns
+    -------
+    raster_images
+    """
     original_side = 256.
 
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, side, side)
