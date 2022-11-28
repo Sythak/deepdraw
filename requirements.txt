@@ -7,7 +7,7 @@ streamlit
 requests
 cairocffi
 svgwrite
-#PIL
+pillow
 cairosvg
 imageio
 rdp
