@@ -7,7 +7,7 @@ import numpy as np
 from typing import Tuple
 
 
-def initialize_model(X: np.ndarray) -> Model:
+def initialize_cnn(X: np.ndarray) -> Model:
     """
     Initialize the Convolutional Neural Network with random weights
     """
@@ -19,7 +19,7 @@ def initialize_model(X: np.ndarray) -> Model:
 
     model.add(layers.experimental.preprocessing.Rescaling(scale=1./255.))
 
-    model.add(Conv2D(32, (3,3), activation='relu'), padding='same')
+    model.add(Conv2D(32, (3,3), activation='relu'), padding='same', input_shape=(28,28))
     model.add(MaxPooling2D((2,2)))
 
     model.add(Conv2D(32, (3,3), activation='relu'), padding='same')
@@ -35,7 +35,7 @@ def initialize_model(X: np.ndarray) -> Model:
     return model
 
 
-def compile_model(model: Model) -> Model:
+def compile_cnn(model: Model) -> Model:
     """
     Compile the CNN
     """
@@ -48,7 +48,7 @@ def compile_model(model: Model) -> Model:
     return model
 
 
-def train_model(model: Model,
+def train_cnn(model: Model,
                 X: np.ndarray,
                 y: np.ndarray,
                 batch_size=64,
@@ -78,7 +78,7 @@ def train_model(model: Model,
     return model, history
 
 
-def evaluate_model(model: Model,
+def evaluate_cnn(model: Model,
                    X: np.ndarray,
                    y: np.ndarray,
                    batch_size=64) -> Tuple[Model, dict]:
