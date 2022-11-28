@@ -3,3 +3,7 @@ raw_data/
 .python-version
 *checkpoint.ipynb
 *.ipynb_checkpoints
+*.egg-info
+*.csv
+*.zip
+*.sqlite
