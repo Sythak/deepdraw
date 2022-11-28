@@ -12,3 +12,8 @@ cairosvg
 imageio
 rdp
 python-dotenv
+colorama
+# Trick to install the version of Tensorflow depending on your processor: darwin == Mac, ARM == M1
+tensorflow-macos==2.10.0; sys_platform == 'darwin' and 'ARM' in platform_version # Mac M-chips
+tensorflow==2.10.0; sys_platform == 'darwin' and 'ARM' not in platform_version # Mac Intel chips
+tensorflow==2.10.0; sys_platform != 'darwin' # Windows & Ubuntu Intel chips
