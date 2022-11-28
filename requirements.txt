@@ -1,0 +1,14 @@
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+streamlit
+requests
+cairocffi
+svgwrite
+PIL
+cairosvg
+imageio
+rdp
+python-dotenv
