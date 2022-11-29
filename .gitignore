@@ -13,3 +13,4 @@ raw_data/
 **/*.npy
 **/*.tfrecords
 .DS_Store
+__pycache__/

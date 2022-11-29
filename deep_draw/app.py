@@ -3,6 +3,9 @@ from PIL import Image
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 import json
+from utils import vector_to_raster
+import numpy as np
+import matplotlib.pyplot as plt
 
 # Specify canvas parameters in application
 drawing_mode = st.sidebar.selectbox(
@@ -63,8 +66,18 @@ try :
         ndjson_format["key_id"] = "1"
         ndjson_format["countrycode"] = "FR"
 
-        with open("sample.json", "w") as outfile:
-            json.dump(ndjson_format, outfile)
+
+        #we have now 'quickdraw_format' as the path and 'bitmap_format' for the bitmap
+        bitmap_format = np.array(vector_to_raster([quickdraw_format], side=28)).reshape(28,28)
+        bitmap_normalized = bitmap_format / 255.
+        print(bitmap_normalized.shape)
+        plt.imshow(bitmap_normalized)
+        if st.button('save'):
+            plt.savefig("image.jpg")
+
+
+        #with open("sample.json", "w") as outfile:
+            #json.dump(ndjson_format, outfile)
 except :
     a=None
 
