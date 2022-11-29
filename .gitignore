@@ -1,5 +1,5 @@
 .env
-raw_data/
+raw_data/*
 .python-version
 *checkpoint.ipynb
 *.ipynb_checkpoints
@@ -14,4 +14,5 @@ data_npy
 **/*.npy
 **/*.tfrecords
 .DS_Store
-__pycache__/
+__pycache__/*
+dl_logic/__pycache__/*
