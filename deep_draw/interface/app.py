@@ -3,25 +3,29 @@ from PIL import Image
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 import json
-from utils import vector_to_raster, raw_to_lines, lines_to_strokes, to_big_strokes, clean_strokes, to_normal_strokes, strokes_to_lines, stroke_to_quickdraw
+from deep_draw.dl_logic.utils import vector_to_raster, raw_to_lines, lines_to_strokes, to_big_strokes, clean_strokes, to_normal_strokes, strokes_to_lines, stroke_to_quickdraw
 import numpy as np
+from tensorflow import keras
 import matplotlib.pyplot as plt
 from rdp import rdp
 import random
 import io
 
+
+#test
 # Specify canvas parameters in application
-drawing_mode = st.sidebar.text('freedraw')
+# drawing_mode = st.sidebar.text('freedraw')
 
-stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
-if drawing_mode == 'point':
-    point_display_radius = st.sidebar.slider("Point display radius: ", 1, 25, 3)
-stroke_color = st.sidebar.color_picker("Stroke color hex: ")
-bg_color = st.sidebar.color_picker("Background color hex: ", "#eee")
-bg_image = st.sidebar.file_uploader("Background image:", type=["png", "jpg"])
+# stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
+# if drawing_mode == 'point':
+#     point_display_radius = st.sidebar.slider("Point display radius: ", 1, 25, 3)
+# stroke_color = st.sidebar.color_picker("Stroke color hex: ")
+# bg_color = st.sidebar.color_picker("Background color hex: ", "#eee")
+# bg_image = st.sidebar.file_uploader("Background image:", type=["png", "jpg"])
 
-realtime_update = st.sidebar.checkbox("Update in realtime :)", True)
+# realtime_update = st.sidebar.checkbox("Update in realtime :)", True)
 
+model = keras.models.load_model('path/to/location')
 
 
 # Create a canvas component
@@ -30,11 +34,11 @@ canvas_result = st_canvas(
     stroke_width=1,
     stroke_color="#000",
     background_color="#eee",
-    background_image=Image.open(bg_image) if bg_image else None,
-    update_streamlit=realtime_update,
+    background_image=None,
+    update_streamlit=True,
     height=600,
     drawing_mode="freedraw",
-    point_display_radius=point_display_radius if drawing_mode == 'point' else 0,
+    point_display_radius=0,
     key="canvas",
 )
 
@@ -100,21 +104,21 @@ try :
         strokes = stroke_to_quickdraw(simp_strokes_3, max_dim_size=255)
 
         #we have now 'quickdraw_format' as the path and 'bitmap_format' for the bitmap
-        bitmap_format = np.array(vector_to_raster([strokes], side=28)).reshape(28,-1)
+        bitmap_format = np.array(vector_to_raster([strokes], side=28)).reshape(28,-1, 1)
         bitmap_normalized = bitmap_format / 255.
-
         # convert image to bytes
-        image_bytes = bitmap_normalized.tobytes()
-
-        print(image_bytes)
+        #image_bytes = bitmap_normalized.tobytes()
         # plt.imshow(bitmap_normalized)
-        # if st.button('save'):
-        #     plt.savefig("image.jpg")
+
+        if st.button('Submit'):
+            st.write(model.predict(bitmap_normalized))
 
         #with open("sample.json", "w") as outfile:
             #json.dump(ndjson_format, outfile)
 except :
     a=None
+
+
 
 # if canvas_result.json_data is not None:
 #     objects = pd.json_normalize(canvas_result.json_data["objects"]) # need to convert obj to str because PyArrow
