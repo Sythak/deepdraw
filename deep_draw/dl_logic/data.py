@@ -4,7 +4,7 @@ import glob
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
-def load_data_npy(root, test_size=0.2, max_items_per_class= 100000):
+def load_data_npy(root, test_size, max_items_per_class):
 
     all_files = glob.glob(os.path.join(root, '*.npy'))
 
@@ -24,7 +24,7 @@ def load_data_npy(root, test_size=0.2, max_items_per_class= 100000):
         y = np.append(y, labels)
 
         class_name, ext = os.path.splitext(os.path.basename(file))
-        class_name.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
+        class_names.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
 
     data = None
     labels = None
