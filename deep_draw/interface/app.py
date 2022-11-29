@@ -116,6 +116,8 @@ try :
 except :
     a=None
 
+
+
 # if canvas_result.json_data is not None:
 #     objects = pd.json_normalize(canvas_result.json_data["objects"]) # need to convert obj to str because PyArrow
 #     for col in objects.select_dtypes(include=['object']).columns:
