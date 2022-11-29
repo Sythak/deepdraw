@@ -155,7 +155,7 @@ def parse_tfr_element(element):
 
 def get_dataset_multi(tfr_dir: str = "/content/", pattern: str = "*.tfrecords"):
     files = glob.glob(os.path.join(tfr_dir, pattern), recursive=False)
-    print(files)
+    #print(files)
 
     #create the dataset
     dataset = tf.data.TFRecordDataset(files)
@@ -167,9 +167,9 @@ def get_dataset_multi(tfr_dir: str = "/content/", pattern: str = "*.tfrecords"):
 
 def load_tfrecords_dataset(source_type = 'train'):
     # Load dataset
-    dataset = get_dataset_multi(tfr_dir='../raw_data/tfrecords/', pattern=f"*_{source_type}.tfrecords")
+    dataset = get_dataset_multi(tfr_dir='../../raw_data/tfrecords/', pattern=f"*_{source_type}.tfrecords")
     dataset = dataset.batch(32)
-    dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, to_categorical(y, NUM_CLASSES)))
+    dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, y))
     return dataset
 
 
