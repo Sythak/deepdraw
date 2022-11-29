@@ -7,3 +7,4 @@ raw_data/
 *.csv
 *.zip
 *.sqlite
+data_npy

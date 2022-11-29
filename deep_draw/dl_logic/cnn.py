@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dens
 from tensorflow.keras.callbacks import EarlyStopping
 import numpy as np
 from typing import Tuple
+import os
 
 
 def initialize_cnn(X: np.ndarray) -> Model:
@@ -13,21 +14,22 @@ def initialize_cnn(X: np.ndarray) -> Model:
     """
     print(Fore.BLUE + "\nInitialize model..." + Style.RESET_ALL)
 
-    num_classes = 10
+    num_classes = os.environ.get("NUM_CLASSES")
 
     model = Sequential()
 
-    model.add(layers.experimental.preprocessing.Rescaling(scale=1./255.))
-
-    model.add(Conv2D(32, (3,3), activation='relu'), padding='same', input_shape=(28,28))
+    model.add(Conv2D(16, (3,3), activation='relu', input_shape=(28,28,1)))
     model.add(MaxPooling2D((2,2)))
 
-    model.add(Conv2D(32, (3,3), activation='relu'), padding='same')
+    model.add(Conv2D(32, (3,3), activation='relu', padding='same'))
+    model.add(MaxPooling2D((2,2)))
+
+    model.add(Conv2D(64, (3,3), activation='relu', padding='same'))
     model.add(MaxPooling2D((2,2)))
 
     model.add(Flatten())
     model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.4))
+    #model.add(Dropout(0.4))
     model.add(Dense(num_classes, activation = 'softmax'))
 
     print("\n✅ model initialized")
@@ -52,8 +54,8 @@ def train_cnn(model: Model,
                 X: np.ndarray,
                 y: np.ndarray,
                 batch_size=64,
-                patience=2,
-                validation_data: tuple) -> Tuple[Model, dict]:
+                patience=10,
+                validation_split=0.3) -> Tuple[Model, dict]:
     """
     Fit model and return a the tuple (fitted_model, history)
     """
@@ -67,11 +69,11 @@ def train_cnn(model: Model,
 
     history = model.fit(X,
                         y,
-                        validation_data=validation_data,
+                        validation_split=validation_split,
                         epochs=100,
                         batch_size=batch_size,
                         callbacks=[es],
-                        verbose=0)
+                        verbose=1)
 
     print(f"\n✅ model trained ({len(X)} rows)")
 
