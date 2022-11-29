@@ -3,6 +3,8 @@ import os
 import glob
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
+from tensorflow.keras.utils import to_categorical
+from deep_draw.dl_logic.params import NUM_CLASSES
 
 def load_data_npy(root, test_size, max_items_per_class):
 
@@ -163,28 +165,21 @@ def get_dataset_multi(tfr_dir: str = "/content/", pattern: str = "*.tfrecords"):
 
     return dataset
 
-# Load train dataset
-dataset_train = get_dataset_multi(tfr_dir='../raw_data/tfrecords/', pattern="*_train.tfrecords")
-dataset_train = dataset_train.batch(32)
-dataset_train = dataset_train.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, y))
+def load_tfrecords_dataset(source_type = 'train'):
+    # Load dataset
+    dataset = get_dataset_multi(tfr_dir='../raw_data/tfrecords/', pattern=f"*_{source_type}.tfrecords")
+    dataset = dataset.batch(32)
+    dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, to_categorical(y, NUM_CLASSES)))
+    return dataset
 
-# Load val dataset
-dataset_val = get_dataset_multi(tfr_dir='../raw_data/tfrecords/', pattern="*_val.tfrecords")
-dataset_val = dataset_val.batch(32)
-dataset_val = dataset_val.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, y))
 
-# Load test dataset
-dataset_test = get_dataset_multi(tfr_dir='../raw_data/tfrecords/', pattern="*_test.tfrecords")
-dataset_test = dataset_test.batch(32)
-dataset_test = dataset_test.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, y))
-
-# Create tfrecords
-for shard in range(10):
-    print(shard)
-    X_train, X_test, y_train, y_test, class_names = load_shard('./npy/', shard, test_size=0.3, max_items_per_class=10000)
-    X_train = X_train.reshape(-1,28,28,1)
-    X_test = X_test.reshape(-1,28,28,1)
-    y_train = y_train.reshape(-1,1)
-    y_test = y_test.reshape(-1,1)
-    write_images_to_tfr_short(X_train, y_train, filename=f"shard_{shard}_train")
-    write_images_to_tfr_short(X_test, y_test, filename=f"shard_{shard}_test")
+def create_tfrecords():
+    for shard in range(10):
+        print(shard)
+        X_train, X_test, y_train, y_test, class_names = load_shard('../../raw_data/npy/', shard, test_size=0.3, max_items_per_class=10000)
+        X_train = X_train.reshape(-1,28,28,1)
+        X_test = X_test.reshape(-1,28,28,1)
+        y_train = y_train.reshape(-1,1)
+        y_test = y_test.reshape(-1,1)
+        write_images_to_tfr_short(X_train, y_train, filename=f"../../raw_data/tfrecords/shard_{shard}_train")
+        write_images_to_tfr_short(X_test, y_test, filename=f"../../raw_data/tfrecords/shard_{shard}_test")
