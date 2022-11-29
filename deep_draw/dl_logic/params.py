@@ -1,8 +1,8 @@
 
-
+LOCAL_REGISTRY_PATH='/Users/hugofraidenraich/code/mlops/training_outputs'
 
 # main params
-format_data = 'tfrecords' # 'npy' or 'tfrecords'
+format_data = 'npy' # 'npy' or 'tfrecords'
 root = '../../raw_data/npy/'
 max_items_per_class= 1000
 NUM_CLASSES = 10
