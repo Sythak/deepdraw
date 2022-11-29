@@ -16,7 +16,7 @@ def load_data_npy(root, test_size, max_items_per_class):
     class_names = []
 
     #load a subset of the data to memory
-    for idx, file in enumerate(all_files):
+    for idx, file in enumerate(sorted(all_files)):
         data = np.load(file)
         print("\n✅ ", file, " loaded")
         data = data[0: max_items_per_class, :]

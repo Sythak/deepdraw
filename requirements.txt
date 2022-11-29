@@ -12,6 +12,7 @@ cairosvg
 IPython
 imageio
 rdp
+python-dotenv
 streamlit-drawable-canvas
 python-dotenv
 colorama
