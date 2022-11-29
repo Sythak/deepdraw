@@ -1,5 +1,5 @@
 
-
+LOCAL_REGISTRY_PATH='/Users/hugofraidenraich/code/mlops/training_outputs'
 
 # main params
 format_data = 'npy' # 'npy' or 'tfrecords'

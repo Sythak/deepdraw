@@ -9,7 +9,35 @@ from typing import Tuple
 import os
 
 
-def initialize_cnn(X: np.ndarray) -> Model:
+def initialize_cnn() -> Model:
+    """
+    Initialize the Convolutional Neural Network with random weights
+    """
+    print(Fore.BLUE + "\nInitialize model..." + Style.RESET_ALL)
+
+    num_classes = NUM_CLASSES
+
+    model = Sequential()
+
+    model.add(Conv2D(16, (3,3), activation='relu', input_shape=(28,28,1)))
+    model.add(MaxPooling2D((2,2)))
+
+    model.add(Conv2D(32, (3,3), activation='relu', padding='same'))
+    model.add(MaxPooling2D((2,2)))
+
+    model.add(Conv2D(64, (3,3), activation='relu', padding='same'))
+    model.add(MaxPooling2D((2,2)))
+
+    model.add(Flatten())
+    model.add(Dense(128, activation='relu'))
+    #model.add(Dropout(0.4))
+    model.add(Dense(num_classes, activation = 'softmax'))
+
+    print("\n✅ model initialized")
+
+    return model
+
+def initialize_cnn_tfrecords() -> Model:
     """
     Initialize the Convolutional Neural Network with random weights
     """
@@ -45,6 +73,18 @@ def compile_cnn(model: Model) -> Model:
     model.compile(
         optimizer='adam',
         loss='categorical_crossentropy',
+        metrics=['accuracy'])
+
+    print("\n✅ model compiled")
+    return model
+
+def compile_cnn_tfrecords(model: Model) -> Model:
+    """
+    Compile the CNN
+    """
+    model.compile(
+        optimizer='adam',
+        loss='sparse_categorical_crossentropy',
         metrics=['accuracy'])
 
     print("\n✅ model compiled")
