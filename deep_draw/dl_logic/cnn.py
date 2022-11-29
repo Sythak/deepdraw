@@ -81,6 +81,34 @@ def train_cnn_npy(model: Model,
 
     return model, history
 
+def train_cnn_tfrecords(model: Model,
+                dataset_train,
+                dataset_val,
+                batch_size=32,
+                patience=10,
+                epochs = 100) -> Tuple[Model, dict]:
+    """
+    Fit model and return a the tuple (fitted_model, history)
+    """
+
+    print(Fore.BLUE + "\nTrain model..." + Style.RESET_ALL)
+
+    es = EarlyStopping(monitor="val_loss",
+                       patience=patience,
+                       restore_best_weights=True,
+                       verbose=0)
+
+    history = model.fit(dataset_train,
+                        validation_data=dataset_val,
+                        epochs=epochs,
+                        batch_size=batch_size,
+                        callbacks=[es],
+                        verbose=1)
+
+    print(f"\n✅ model trained ({len(X)} rows)")
+
+    return model, history
+
 
 def evaluate_cnn(model: Model,
                    X: np.ndarray,
