@@ -2,6 +2,8 @@ from colorama import Fore, Style
 
 import numpy as np
 import pandas as pd
+import os
+import glob
 
 from deep_draw.dl_logic.preprocessor import image_preprocess, y_to_categorical
 from deep_draw.dl_logic.cnn import initialize_cnn, compile_cnn, train_cnn_npy, evaluate_cnn, train_cnn_tfrecords, initialize_cnn_tfrecords, compile_cnn_tfrecords
@@ -63,9 +65,9 @@ def preprocess_train_eval():
         model, history = train_cnn_tfrecords(model,
                                             dataset_train,
                                             dataset_val,
-                                            batch_size=32,
-                                            patience=10,
-                                            epochs = 100)
+                                            batch_size=batch_size,
+                                            patience=patience,
+                                            epochs = epochs)
         params = dict(
             # Model parameters
             learning_rate=learning_rate,
@@ -82,15 +84,28 @@ def preprocess_train_eval():
         res = history.history['val_accuracy']
         save_model(model, params=params, metrics=res)
 
-    return None
+    return class_names
 
 def pred(X_pred):
     model = load_model()
     y_pred = model.predict(X_pred)
+    index = np.argmax(y_pred, axis=1)
 
-    print("\n✅ prediction done: ", y_pred, y_pred.shape)
-    return y_pred
+    all_files = glob.glob(os.path.join(root, '*.npy'))
+
+    #initialize variables
+    class_names = []
+
+    #load a subset of the data to memory
+    for idx, file in enumerate(sorted(all_files)):
+        class_name, ext = os.path.splitext(os.path.basename(file))
+        class_names.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
+
+    prediction = class_names[index[0]]
+
+    #print("\n✅ prediction done: ", y_pred, y_pred.shape)
+    return prediction
 
 if __name__ == '__main__':
-    preprocess_train_eval()
-    pred()
+    class_names = preprocess_train_eval()
+    #pred()

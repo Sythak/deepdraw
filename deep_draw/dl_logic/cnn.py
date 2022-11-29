@@ -145,8 +145,6 @@ def train_cnn_tfrecords(model: Model,
                         callbacks=[es],
                         verbose=1)
 
-    print(f"\n✅ model trained ({len(X)} rows)")
-
     return model, history
 
 

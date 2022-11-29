@@ -5,6 +5,7 @@ from streamlit_drawable_canvas import st_canvas
 import json
 from deep_draw.dl_logic.utils import vector_to_raster, raw_to_lines, lines_to_strokes, to_big_strokes, clean_strokes, to_normal_strokes, strokes_to_lines, stroke_to_quickdraw
 import numpy as np
+from deep_draw.interface.main import pred
 from tensorflow import keras
 import matplotlib.pyplot as plt
 from rdp import rdp
@@ -24,9 +25,6 @@ import io
 # bg_image = st.sidebar.file_uploader("Background image:", type=["png", "jpg"])
 
 # realtime_update = st.sidebar.checkbox("Update in realtime :)", True)
-
-model = keras.models.load_model('path/to/location')
-
 
 # Create a canvas component
 canvas_result = st_canvas(
@@ -104,14 +102,18 @@ try :
         strokes = stroke_to_quickdraw(simp_strokes_3, max_dim_size=255)
 
         #we have now 'quickdraw_format' as the path and 'bitmap_format' for the bitmap
-        bitmap_format = np.array(vector_to_raster([strokes], side=28)).reshape(28,-1, 1)
+        bitmap_format = np.array(vector_to_raster([strokes], side=28)).reshape(1, 28, 28, 1)
         bitmap_normalized = bitmap_format / 255.
         # convert image to bytes
         #image_bytes = bitmap_normalized.tobytes()
-        # plt.imshow(bitmap_normalized)
+        #plt.imshow(bitmap_normalized)
+
+        #my_dict = {'0':'Bear', '1':'Car', '2':'Cat', '3':'Coffee cup', '4':'Crown', '5':'Eye', '6':'Frog', '7':'Guitar', '8':'Hat', '9':'Pig'}
 
         if st.button('Submit'):
-            st.write(model.predict(bitmap_normalized))
+            prediction = pred(bitmap_normalized)
+            st.write(prediction.title())
+
 
         #with open("sample.json", "w") as outfile:
             #json.dump(ndjson_format, outfile)
