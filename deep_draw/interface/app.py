@@ -25,6 +25,7 @@ import io
 
 model = keras.models.load_model('path/to/location')
 
+
 # Create a canvas component
 canvas_result = st_canvas(
     fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
