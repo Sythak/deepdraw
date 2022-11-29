@@ -3,6 +3,7 @@ from colorama import Fore, Style
 from tensorflow.keras import Model, Sequential, layers, regularizers, optimizers
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense
 from tensorflow.keras.callbacks import EarlyStopping
+from deep_draw.dl_logic.params import NUM_CLASSES
 import numpy as np
 from typing import Tuple
 import os
@@ -14,7 +15,7 @@ def initialize_cnn(X: np.ndarray) -> Model:
     """
     print(Fore.BLUE + "\nInitialize model..." + Style.RESET_ALL)
 
-    num_classes = os.environ.get("NUM_CLASSES")
+    num_classes = NUM_CLASSES
 
     model = Sequential()
 
@@ -43,19 +44,20 @@ def compile_cnn(model: Model) -> Model:
     """
     model.compile(
         optimizer='adam',
-        loss='categorical_ crossentropy',
+        loss='categorical_crossentropy',
         metrics=['accuracy'])
 
     print("\n✅ model compiled")
     return model
 
 
-def train_cnn(model: Model,
+def train_cnn_npy(model: Model,
                 X: np.ndarray,
                 y: np.ndarray,
                 batch_size=64,
                 patience=10,
-                validation_split=0.3) -> Tuple[Model, dict]:
+                validation_split=0.3,
+                epochs = 100) -> Tuple[Model, dict]:
     """
     Fit model and return a the tuple (fitted_model, history)
     """
@@ -70,7 +72,7 @@ def train_cnn(model: Model,
     history = model.fit(X,
                         y,
                         validation_split=validation_split,
-                        epochs=100,
+                        epochs=epochs,
                         batch_size=batch_size,
                         callbacks=[es],
                         verbose=1)
@@ -99,12 +101,12 @@ def evaluate_cnn(model: Model,
         y=y,
         batch_size=batch_size,
         verbose=1,
-        # callbacks=None,
+    #   callbacks=None,
         return_dict=True)
 
     loss = metrics["loss"]
     accuracy = metrics["accuracy"]
 
-    print(f"\n✅ model evaluated: loss {round(loss, 2)} mae {round(accuracy, 2)}")
+    print(f"\n✅ model evaluated: loss {round(loss, 2)} accuracy {round(accuracy, 2)}")
 
     return metrics
