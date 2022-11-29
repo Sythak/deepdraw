@@ -2,7 +2,7 @@
 
 
 # main params
-format_data = 'npy' # 'npy' or 'tfrecords'
+format_data = 'tfrecords' # 'npy' or 'tfrecords'
 root = '../../raw_data/npy/'
 max_items_per_class= 1000
 NUM_CLASSES = 10
