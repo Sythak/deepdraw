@@ -4,7 +4,7 @@ import glob
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
-from deep_draw.dl_logic.params import NUM_CLASSES
+from deep_draw.dl_logic.params import NUM_CLASSES, batch_size
 
 def load_data_npy(root, test_size, max_items_per_class):
 
@@ -51,7 +51,7 @@ def load_shard(root, shard, test_size=0.2, max_items_per_class= 5000):
     class_names = []
 
     #load a subset of the data to memory
-    for idx, file in enumerate(all_files):
+    for idx, file in enumerate(sorted(all_files)):
         print(file)
         data = np.load(file)
         data = data[shard*max_items_per_class: (shard+1)*max_items_per_class, :]
@@ -61,7 +61,7 @@ def load_shard(root, shard, test_size=0.2, max_items_per_class= 5000):
         y = np.append(y, labels)
 
         class_name, ext = os.path.splitext(os.path.basename(file))
-        class_names.append(class_name)
+        class_names.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
 
     data = None
     labels = None
@@ -165,10 +165,10 @@ def get_dataset_multi(tfr_dir: str = "/content/", pattern: str = "*.tfrecords"):
 
     return dataset
 
-def load_tfrecords_dataset(source_type = 'train'):
+def load_tfrecords_dataset(source_type = 'train', batch_size=32):
     # Load dataset
     dataset = get_dataset_multi(tfr_dir='../../raw_data/tfrecords/', pattern=f"*_{source_type}.tfrecords")
-    dataset = dataset.batch(32)
+    dataset = dataset.batch(batch_size)
     dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, y))
     return dataset
 
