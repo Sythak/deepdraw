@@ -176,3 +176,30 @@ def evaluate_cnn(model: Model,
     print(f"\n✅ model evaluated: loss {round(loss, 2)} accuracy {round(accuracy, 2)}")
 
     return metrics
+
+def evaluate_cnn_tfrecords(model: Model,
+                   dataset_test,
+                   batch_size=64) -> Tuple[Model, dict]:
+    """
+    Evaluate trained model performance on dataset
+    """
+
+    print(Fore.BLUE + f"\nEvaluate model ..." + Style.RESET_ALL)
+
+    if model is None:
+        print(f"\n❌ no model to evaluate")
+        return None
+
+    metrics = model.evaluate(
+        dataset_test,
+        batch_size=batch_size,
+        verbose=1,
+    #   callbacks=None,
+        return_dict=True)
+
+    loss = metrics["loss"]
+    accuracy = metrics["accuracy"]
+
+    print(f"\n✅ model evaluated: loss {round(loss, 2)} accuracy {round(accuracy, 2)}")
+
+    return metrics

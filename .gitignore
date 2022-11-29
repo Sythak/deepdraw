@@ -16,3 +16,4 @@ data_npy
 .DS_Store
 __pycache__/*
 dl_logic/__pycache__/*
+**/*.pyc
