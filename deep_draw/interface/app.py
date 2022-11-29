@@ -11,6 +11,8 @@ from rdp import rdp
 import random
 import io
 
+
+#test
 # Specify canvas parameters in application
 # drawing_mode = st.sidebar.text('freedraw')
 
