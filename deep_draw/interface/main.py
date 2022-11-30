@@ -128,6 +128,7 @@ def pred(X_pred):
 
     path_yaml= os.path.join(dirname(__file__),'dl_logic','categories.yaml')
     # Open the file and load the file
+
     with open(path_yaml) as f:
         class_names = yaml.load(f, Loader=SafeLoader)
 
