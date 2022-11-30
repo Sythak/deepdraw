@@ -1,9 +1,6 @@
-  FROM tensorflow/tensorflow:2.10.0
-  WORKDIR /prod
+  FROM --platform=linux/amd64 tensorflow/tensorflow:2.10.0
   COPY deep_draw deep_draw
-  COPY requirements.txt requirements.txt
-  COPY .env .env
-  COPY setup.py setup.py
+  COPY requirements_prod.txt requirements_prod.txt
   RUN pip install --upgrade pip
-  RUN pip install -r requirements.txt
+  RUN pip install -r requirements_prod.txt
   CMD uvicorn deep_draw.fast_api:app --host 0.0.0.0 --port $PORT
