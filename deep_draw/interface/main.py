@@ -127,7 +127,7 @@ def pred(X_pred):
     index = np.argmax(y_pred, axis=1)
 
     # Open the file and load the file
-    with open('../dl_logic/categories.yaml') as f:
+    with open('deep_draw/dl_logic/categories.yaml') as f:
         class_names = yaml.load(f, Loader=SafeLoader)
 
     prediction = class_names[index[0]]
