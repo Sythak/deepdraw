@@ -10,7 +10,6 @@ from tensorflow import keras
 import matplotlib.pyplot as plt
 from rdp import rdp
 import random
-import plotly.express as px
 import io
 import requests
 from json import JSONEncoder

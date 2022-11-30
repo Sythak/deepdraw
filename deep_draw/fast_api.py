@@ -27,7 +27,7 @@ app.add_middleware(
 @app.post("/predict/")
 async def image(item: Item):
     np_array_image = image_from_dict(dict(item))
-    prediction = pred(np_array_image)
+    prediction = pred(np_array_image/255.)
     return {'test' : prediction}
 
 
