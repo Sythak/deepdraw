@@ -12,6 +12,8 @@ from deep_draw.dl_logic.params import format_data, root, max_items_per_class, NU
 from deep_draw.dl_logic.data import load_tfrecords_dataset
 from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH
 from deep_draw.dl_logic.registry import save_model, load_model, get_model_version
+import yaml
+from yaml.loader import SafeLoader
 
 def preprocess_train_eval():
 # Load & preprocess
@@ -54,11 +56,9 @@ def preprocess_train_eval():
         dataset_val = load_tfrecords_dataset(source_type = 'val', batch_size=batch_size)
         dataset_test = load_tfrecords_dataset(source_type = 'test', batch_size=batch_size)
 
-        all_files = glob.glob(os.path.join(root, '*.npy'))
-        class_names = []
-        for idx, file in enumerate(sorted(all_files)):
-            class_name, ext = os.path.splitext(os.path.basename(file))
-            class_names.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
+        # Open the file and load the file
+        with open('../dl_logic/categories.yaml') as f:
+            class_names = yaml.load(f, Loader=SafeLoader)
 
         model = None
         if model is None:
@@ -95,15 +95,9 @@ def pred(X_pred):
     y_pred = model.predict(X_pred)
     index = np.argmax(y_pred, axis=1)
 
-    all_files = glob.glob(os.path.join(root, '*.npy'))
-
-    #initialize variables
-    class_names = []
-
-    #load a subset of the data to memory
-    for idx, file in enumerate(sorted(all_files)):
-        class_name, ext = os.path.splitext(os.path.basename(file))
-        class_names.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
+    # Open the file and load the file
+    with open('../dl_logic/categories.yaml') as f:
+        class_names = yaml.load(f, Loader=SafeLoader)
 
     prediction = class_names[index[0]]
 
