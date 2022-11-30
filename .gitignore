@@ -15,3 +15,4 @@ data_npy
 **/*.tfrecords
 .DS_Store
 **/*.pyc
+models/

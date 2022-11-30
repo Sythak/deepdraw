@@ -110,10 +110,10 @@ try :
         if st.button('Submit'):
             json_to_api = image_to_dict(bitmap_format)
             json_to_api_2 = json.dumps(json_to_api)
-            url = 'http://127.0.0.1:8000/predict'
+            url = 'https://deepdrawimage-do5ciztupa-ew.a.run.app/predict/'
             with requests.Session() as s:
                 response = s.post(url, json_to_api_2)
-            st.write((response.json()['test']).title())
+            st.write(response.json()['test'].title())
             #st.write(prediction.title())
 
 
