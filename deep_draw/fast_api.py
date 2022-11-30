@@ -24,19 +24,6 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# @app.post("/predict/")
-# async def main(img: UploadFile = File(...)):
-#     img.filename = "content"
-#     img_step = await img.read()  # <-- Important!
-
-#     img_step=tf.io.decode_image(img_step,
-#                            channels=3,
-#                            dtype=tf.dtypes.float32,
-#                            name=None,
-#                            expand_animations=True)
-
-#     return {'prediction' : "jusqu'ici tout va bien"}
-
 @app.post("/predict/")
 async def image(item: Item):
     np_array_image = image_from_dict(dict(item))
