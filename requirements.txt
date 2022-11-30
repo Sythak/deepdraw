@@ -25,3 +25,4 @@ fastapi
 python-multipart
 pyyaml
 mlflow~=1.26.1
+google-cloud-storage

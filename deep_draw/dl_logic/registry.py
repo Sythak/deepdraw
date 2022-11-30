@@ -11,6 +11,8 @@ from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH
 
 from tensorflow.keras import Model, models
 
+from google.cloud import storage
+
 def save_model(model: Model = None,
                params: dict = None,
                metrics: dict = None) -> None:
@@ -133,3 +135,35 @@ def get_model_version(stage="Production"):
     # model version not handled
 
     return None
+
+def make_gcs_bucket(bucket_name: str):
+    """Create a bucket in google cloud storage"""
+    # Instantiates a client
+    storage_client = storage.Client()
+
+    # Creates the new bucket
+    bucket = storage_client.create_bucket(bucket_name)
+
+    print(f"Bucket {bucket.name} created.")
+
+def upload_gcs(bucket_name: str, local_path, destination_blob_name):
+    """Upload a file to the bucket"""
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
+    # The path to your file to upload
+    # The ID of your GCS object
+    # destination_blob_name = "storage-object-name"
+
+    storage_client = storage.client.Client(project='Deep-draw-project', credentials=None)
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(local_path)
+
+    print(
+        f"File {local_path} uploaded to {destination_blob_name}."
+    )
+
+
+if __name__ == '__main__':
+ #   upload_gcs('npy-files','/Users/hugofraidenraich/code/Sythak/deepdraw/raw_data/npy/full_numpy_bitmap_bear.npy', 'bear_file.py')
