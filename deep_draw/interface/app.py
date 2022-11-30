@@ -3,42 +3,44 @@ from PIL import Image
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 import json
-from deep_draw.dl_logic.utils import vector_to_raster, raw_to_lines, lines_to_strokes, to_big_strokes, clean_strokes, to_normal_strokes, strokes_to_lines, stroke_to_quickdraw
+from deep_draw.dl_logic.utils import vector_to_raster, raw_to_lines, lines_to_strokes, to_big_strokes, clean_strokes, to_normal_strokes, strokes_to_lines, stroke_to_quickdraw, image_to_dict
 import numpy as np
 from deep_draw.interface.main import pred
 from tensorflow import keras
 import matplotlib.pyplot as plt
 from rdp import rdp
 import random
+import plotly.express as px
 import io
+import requests
+from json import JSONEncoder
 
-
-#test
-# Specify canvas parameters in application
-# drawing_mode = st.sidebar.text('freedraw')
-
-# stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
-# if drawing_mode == 'point':
-#     point_display_radius = st.sidebar.slider("Point display radius: ", 1, 25, 3)
-# stroke_color = st.sidebar.color_picker("Stroke color hex: ")
-# bg_color = st.sidebar.color_picker("Background color hex: ", "#eee")
-# bg_image = st.sidebar.file_uploader("Background image:", type=["png", "jpg"])
-
-# realtime_update = st.sidebar.checkbox("Update in realtime :)", True)
 
 # Create a canvas component
-canvas_result = st_canvas(
-    fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
-    stroke_width=1,
-    stroke_color="#000",
-    background_color="#eee",
-    background_image=None,
-    update_streamlit=True,
-    height=600,
-    drawing_mode="freedraw",
-    point_display_radius=0,
-    key="canvas",
-)
+st.set_page_config(layout="wide")
+col1, padding, col2, padding = st.columns((10,2,10,2))
+
+with col1:
+    st.header("Deep Draw")
+    canvas_result = st_canvas(
+        fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
+        stroke_width=1,
+        stroke_color="#000",
+        background_color="#eee",
+        background_image=None,
+        update_streamlit=True,
+        height=600,
+        drawing_mode="freedraw",
+        point_display_radius=0,
+        key="canvas",
+    )
+
+with col2:
+    st.header("Probabilities")
+    # df = px.data.gapminder().query("country == 'Canada'")
+    # fig = px.bar(df, x='year', y='pop', orientation='h',
+    #          hover_data=['lifeExp', 'gdpPercap'], color='lifeExp', height=1000)
+    # st.write(fig)
 
 #st.text(type(canvas_result.image_data))
 
@@ -103,16 +105,21 @@ try :
 
         #we have now 'quickdraw_format' as the path and 'bitmap_format' for the bitmap
         bitmap_format = np.array(vector_to_raster([strokes], side=28)).reshape(1, 28, 28, 1)
-        bitmap_normalized = bitmap_format / 255.
-        # convert image to bytes
-        #image_bytes = bitmap_normalized.tobytes()
+        #bitmap_normalized = bitmap_format / 255.
         #plt.imshow(bitmap_normalized)
-
         #my_dict = {'0':'Bear', '1':'Car', '2':'Cat', '3':'Coffee cup', '4':'Crown', '5':'Eye', '6':'Frog', '7':'Guitar', '8':'Hat', '9':'Pig'}
-
         if st.button('Submit'):
-            prediction = pred(bitmap_normalized)
-            st.write(prediction.title())
+            json_to_api = image_to_dict(bitmap_format)
+            json_to_api_2 = json.dumps(json_to_api)
+            print(type(json_to_api))
+            url = 'http://127.0.0.1:8000/predict'
+            with requests.Session() as s:
+                response = s.post(url, json_to_api_2)
+            st.write(response.json())
+            print(response.json())
+            #st.write(prediction.title())
+
+
 
 
         #with open("sample.json", "w") as outfile:
