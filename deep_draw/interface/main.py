@@ -18,7 +18,7 @@ from yaml.loader import SafeLoader
 def preprocess_train_eval():
 # Load & preprocess
     if format_data == 'npy':
-        X_train, X_test, y_train, y_test, class_names = load_data_npy(root= root, test_size=test_size, max_items_per_class= max_items_per_class)
+        X_train, X_test, y_train, y_test, class_names = load_data_npy(test_size=test_size, max_items_per_class= max_items_per_class)
         X_train_processed, X_test_processed = image_preprocess(X_train, X_test)
         y_train_cat, y_test_cat = y_to_categorical(y_train, y_test)
         model = None
@@ -126,8 +126,9 @@ def pred(X_pred):
     y_pred = model.predict(X_pred)
     index = np.argmax(y_pred, axis=1)
 
+    path_yaml= os.path.join(dirname(__file__),'dl_logic','categories.yaml')
     # Open the file and load the file
-    with open('../dl_logic/categories.yaml') as f:
+    with open(path_yaml) as f:
         class_names = yaml.load(f, Loader=SafeLoader)
 
     prediction = class_names[index[0]]
