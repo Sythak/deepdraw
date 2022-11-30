@@ -12,6 +12,8 @@ from deep_draw.dl_logic.params import format_data, root, max_items_per_class, NU
 from deep_draw.dl_logic.data import load_tfrecords_dataset
 from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH
 from deep_draw.dl_logic.registry import save_model, load_model, get_model_version
+import yaml
+from yaml.loader import SafeLoader
 
 def preprocess_train_eval():
 # Load & preprocess
@@ -30,7 +32,7 @@ def preprocess_train_eval():
                                     epochs = epochs,
                                     batch_size=batch_size,
                                     patience=patience)
-        params = dict(
+        params_train = dict(
             # Model parameters
             learning_rate=learning_rate,
             batch_size=batch_size,
@@ -45,20 +47,32 @@ def preprocess_train_eval():
             model_version=get_model_version(),
             )
 
-        res = history.history['val_accuracy']
-        save_model(model, params=params, metrics=res)
-        metrics = evaluate_cnn(model, X_test_processed, y_test_cat, batch_size=batch_size)
+        res = history.history['val_accuracy'][-1]
+        save_model(model, params=params_train, metrics=dict(accuracy=res))
+
+        params_test = dict(
+            # Model parameters
+            learning_rate=learning_rate,
+            batch_size=batch_size,
+            patience=patience,
+            epochs=epochs,
+            validation_split=validation_split,
+            # Package behavior
+            context="test",
+            # Data source
+            model_version=get_model_version(),
+            )
+        accuracy_test = evaluate_cnn(model, X_test_processed, y_test_cat, batch_size=batch_size)['accuracy']
+        save_model(params=params_test, metrics=dict(accuracy=accuracy_test))
 
     if format_data == 'tfrecords':
         dataset_train = load_tfrecords_dataset(source_type = 'train', batch_size=batch_size)
         dataset_val = load_tfrecords_dataset(source_type = 'val', batch_size=batch_size)
         dataset_test = load_tfrecords_dataset(source_type = 'test', batch_size=batch_size)
 
-        all_files = glob.glob(os.path.join(root, '*.npy'))
-        class_names = []
-        for idx, file in enumerate(sorted(all_files)):
-            class_name, ext = os.path.splitext(os.path.basename(file))
-            class_names.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
+        # Open the file and load the file
+        with open('../dl_logic/categories.yaml') as f:
+            class_names = yaml.load(f, Loader=SafeLoader)
 
         model = None
         if model is None:
@@ -71,7 +85,7 @@ def preprocess_train_eval():
                                             batch_size=batch_size,
                                             patience=patience,
                                             epochs = epochs)
-        params = dict(
+        params_train = dict(
             # Model parameters
             learning_rate=learning_rate,
             batch_size=batch_size,
@@ -84,9 +98,26 @@ def preprocess_train_eval():
             # Data source
             model_version=get_model_version(),
             )
-        res = history.history['val_accuracy']
-        save_model(model, params=params, metrics=res)
-        metrics = evaluate_cnn_tfrecords(model, dataset_test, batch_size=batch_size)
+
+        res = history.history['val_accuracy'][-1]
+        save_model(model, params=params_train, metrics=dict(accuracy=res))
+
+        params_test = dict(
+            # Model parameters
+            learning_rate=learning_rate,
+            batch_size=batch_size,
+            patience=patience,
+            epochs=epochs,
+
+            # Package behavior
+            context="test",
+
+            # Data source
+            model_version=get_model_version(),
+            )
+
+        accuracy_test = evaluate_cnn_tfrecords(model, dataset_test, batch_size=batch_size)['accuracy']
+        save_model(params=params_test, metrics=dict(accuracy=accuracy_test))
 
     return class_names
 
@@ -95,15 +126,9 @@ def pred(X_pred):
     y_pred = model.predict(X_pred)
     index = np.argmax(y_pred, axis=1)
 
-    all_files = glob.glob(os.path.join(root, '*.npy'))
-
-    #initialize variables
-    class_names = []
-
-    #load a subset of the data to memory
-    for idx, file in enumerate(sorted(all_files)):
-        class_name, ext = os.path.splitext(os.path.basename(file))
-        class_names.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
+    # Open the file and load the file
+    with open('../dl_logic/categories.yaml') as f:
+        class_names = yaml.load(f, Loader=SafeLoader)
 
     prediction = class_names[index[0]]
 
