@@ -1,32 +1,56 @@
 import numpy as np
 import os
 import glob
+import yaml
+import io
+from tensorflow.python.lib.io import file_io
+from yaml.loader import SafeLoader
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
-from deep_draw.dl_logic.params import NUM_CLASSES, batch_size
+from deep_draw.dl_logic.params import NUM_CLASSES, batch_size, source_npy
 
-def load_data_npy(root, test_size, max_items_per_class):
+def load_data_npy(test_size, max_items_per_class):
+    if source_npy == 'local':
+        root = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'raw_data','npy')
+        print(root)
+        all_files = glob.glob(os.path.join(root, '*.npy'))
 
-    all_files = glob.glob(os.path.join(root, '*.npy'))
+        #initialize variables
+        X = np.empty([0, 784])
+        y = np.empty([0])
+        class_names = []
 
-    #initialize variables
-    X = np.empty([0, 784])
-    y = np.empty([0])
-    class_names = []
+        #load a subset of the data to memory
+        for idx, file in enumerate(sorted(all_files)):
+            data = np.load(file)
+            print("\n✅ ", file, " loaded")
+            data = data[0: max_items_per_class, :]
+            labels = np.full(data.shape[0], idx)
 
-    #load a subset of the data to memory
-    for idx, file in enumerate(sorted(all_files)):
-        data = np.load(file)
-        print("\n✅ ", file, " loaded")
-        data = data[0: max_items_per_class, :]
-        labels = np.full(data.shape[0], idx)
+            X = np.concatenate((X, data), axis=0)
+            y = np.append(y, labels)
 
-        X = np.concatenate((X, data), axis=0)
-        y = np.append(y, labels)
+            class_name, ext = os.path.splitext(os.path.basename(file))
+            class_names.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
 
-        class_name, ext = os.path.splitext(os.path.basename(file))
-        class_names.append(class_name.replace("full_numpy_bitmap_", "").replace(".npy", ""))
+    if source_npy == 'quickdraw':
+        root = "gs://quickdraw_dataset/full/numpy_bitmap/"
+        path_yaml= os.path.join(os.path.dirname(__file__),'categories.yaml')
+
+        X = np.empty([0, 784])
+        y = np.empty([0])
+
+        with open(path_yaml) as f:
+            class_names = yaml.load(f, Loader=SafeLoader)
+            for idx, class_name in enumerate(class_names):
+                f = io.BytesIO(file_io.read_file_to_string(root + f'{class_name}' + '.npy', binary_mode=True))
+                data = np.load(f)
+                print("\n✅ ", class_name, " loaded")
+                data = data[0: max_items_per_class, :]
+                labels = np.full(data.shape[0], idx)
+                X = np.concatenate((X, data), axis=0)
+                y = np.append(y, labels)
 
     data = None
     labels = None
