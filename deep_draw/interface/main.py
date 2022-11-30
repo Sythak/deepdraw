@@ -32,7 +32,7 @@ def preprocess_train_eval():
                                     epochs = epochs,
                                     batch_size=batch_size,
                                     patience=patience)
-        params = dict(
+        params_train = dict(
             # Model parameters
             learning_rate=learning_rate,
             batch_size=batch_size,
@@ -47,9 +47,23 @@ def preprocess_train_eval():
             model_version=get_model_version(),
             )
 
-        res = history.history['val_accuracy']
-        save_model(model, params=params, metrics=res)
-        metrics = evaluate_cnn(model, X_test_processed, y_test_cat, batch_size=batch_size)
+        res = history.history['val_accuracy'][-1]
+        save_model(model, params=params_train, metrics=dict(accuracy=res))
+
+        params_test = dict(
+            # Model parameters
+            learning_rate=learning_rate,
+            batch_size=batch_size,
+            patience=patience,
+            epochs=epochs,
+            validation_split=validation_split,
+            # Package behavior
+            context="test",
+            # Data source
+            model_version=get_model_version(),
+            )
+        accuracy_test = evaluate_cnn(model, X_test_processed, y_test_cat, batch_size=batch_size)['accuracy']
+        save_model(params=params_test, metrics=dict(accuracy=accuracy_test))
 
     if format_data == 'tfrecords':
         dataset_train = load_tfrecords_dataset(source_type = 'train', batch_size=batch_size)
@@ -71,7 +85,7 @@ def preprocess_train_eval():
                                             batch_size=batch_size,
                                             patience=patience,
                                             epochs = epochs)
-        params = dict(
+        params_train = dict(
             # Model parameters
             learning_rate=learning_rate,
             batch_size=batch_size,
@@ -84,9 +98,26 @@ def preprocess_train_eval():
             # Data source
             model_version=get_model_version(),
             )
-        res = history.history['val_accuracy']
-        save_model(model, params=params, metrics=res)
-        metrics = evaluate_cnn_tfrecords(model, dataset_test, batch_size=batch_size)
+
+        res = history.history['val_accuracy'][-1]
+        save_model(model, params=params_train, metrics=dict(accuracy=res))
+
+        params_test = dict(
+            # Model parameters
+            learning_rate=learning_rate,
+            batch_size=batch_size,
+            patience=patience,
+            epochs=epochs,
+
+            # Package behavior
+            context="test",
+
+            # Data source
+            model_version=get_model_version(),
+            )
+
+        accuracy_test = evaluate_cnn_tfrecords(model, dataset_test, batch_size=batch_size)['accuracy']
+        save_model(params=params_test, metrics=dict(accuracy=accuracy_test))
 
     return class_names
 

@@ -1,6 +1,9 @@
 from colorama import Fore, Style
 
 import time
+import mlflow
+from mlflow.tracking import MlflowClient
+
 import os
 import pickle
 import glob
@@ -39,7 +42,6 @@ def save_model(model: Model = None,
                             artifact_path="model",
                             keras_module="tensorflow.keras",
                             registered_model_name=os.environ.get("MLFLOW_MODEL_NAME"))
-
         return None
 
     print(Fore.BLUE + "\nSave model to local disk..." + Style.RESET_ALL)
