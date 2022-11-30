@@ -163,7 +163,3 @@ def upload_gcs(bucket_name: str, local_path, destination_blob_name):
     print(
         f"File {local_path} uploaded to {destination_blob_name}."
     )
-
-
-if __name__ == '__main__':
- #   upload_gcs('npy-files','/Users/hugofraidenraich/code/Sythak/deepdraw/raw_data/npy/full_numpy_bitmap_bear.npy', 'bear_file.py')

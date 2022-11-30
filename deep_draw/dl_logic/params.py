@@ -5,7 +5,7 @@ from dotenv import load_dotenv, find_dotenv
 env_path = find_dotenv()
 load_dotenv(env_path)
 
-format_data = 'npy' # 'npy' or 'tfrecords'
+format_data = 'tfrecords' # 'npy' or 'tfrecords'
 
 # path params
 LOCAL_REGISTRY_PATH = os.getenv('LOCAL_REGISTRY_PATH')
