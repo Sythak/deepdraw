@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 import glob
+import json
 
 from deep_draw.dl_logic.preprocessor import image_preprocess, y_to_categorical
 from deep_draw.dl_logic.cnn import initialize_cnn, compile_cnn, train_cnn_npy, evaluate_cnn, train_cnn_tfrecords, initialize_cnn_tfrecords, compile_cnn_tfrecords, evaluate_cnn_tfrecords
@@ -128,14 +129,21 @@ def pred(X_pred):
 
     path_yaml= "deep_draw/dl_logic/categories.yaml"
     # Open the file and load the file
-
     with open(path_yaml) as f:
         class_names = yaml.load(f, Loader=SafeLoader)
+    class_names_dict = {k: v for v, k in enumerate(class_names)}
 
+    #Final prediction
     prediction = class_names[index[0]]
 
-    #print("\n✅ prediction done: ", y_pred, y_pred.shape)
-    return prediction
+    #5 best predict of model
+    y_pred_dict = dict(enumerate(y_pred.flatten(), 1))
+    y_pred_dict_s = {k-1: float(v) for k, v in y_pred_dict.items()}
+    final_dict_stats = {c: y_pred_dict_s[v] for c, v in class_names_dict.items()}
+    final_dict_stats = {c: v for c, v in sorted(final_dict_stats.items(),key=lambda item: item[1], reverse=True)}
+    first_5_stats = dict(zip(list(final_dict_stats.keys())[:5], list(final_dict_stats.values())[:5]))
+    first_5_stats = {k: round(v, 2) for k, v in first_5_stats.items()}
+    return prediction, first_5_stats
 
 if __name__ == '__main__':
     class_names = preprocess_train_eval()
