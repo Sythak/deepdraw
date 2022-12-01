@@ -5,9 +5,9 @@ import glob
 import tensorflow as tf
 
 
-def load_data_json_simplified(root, test_size, max_items_per_class):
+def load_data_ndjson(root, test_size, max_items_per_class):
 
-    all_files = glob.glob(os.path.join(root, '*.npy'))
+    all_files = glob.glob(os.path.join(root, '*.ndjson'))
 
     #initialize variables
     X = np.empty([0, 784])

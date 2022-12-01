@@ -48,7 +48,7 @@ def compile_rnn(model: Model) -> Model:
     """
     model.compile(
         optimizer='rmsprop',
-        loss='categorical_crossentropy',
+        loss='sparse_categorical_crossentropy',
         metrics=['accuracy'])
 
     print("\n✅ model compiled")
@@ -64,7 +64,7 @@ def train_rnn(model: Model,
                 X: np.ndarray,
                 y: np.ndarray,
                 batch_size=64,
-                patience=10,
+                patience=5,
                 validation_split=0.3,
                 epochs = 100) -> Tuple[Model, dict]:
     """
