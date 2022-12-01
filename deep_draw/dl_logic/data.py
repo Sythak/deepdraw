@@ -209,8 +209,12 @@ def load_tfrecords_dataset(source_type = 'train', batch_size=32):
         records = [os.path.join('gs://tfrecords-files/', f.name) for f in
                  bucket.list_blobs()]
         data_records = [elem for elem in records if f"_{source_type}" in elem]
+        data_records = ['gs://tfrecords-files/angel_train.tfrecords', 'gs://tfrecords-files/ant_train.tfrecords']
         dataset = get_dataset_multi_gcs(data_records)
+        dataset = dataset.batch(batch_size)
+        dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, y))
 
+    print("\n✅ tfrecords", source_type, " loaded")
     return dataset
 
 
