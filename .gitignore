@@ -16,3 +16,5 @@ data_npy
 .DS_Store
 **/*.pyc
 models/
+.env.yaml
+.envrc

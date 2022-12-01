@@ -21,7 +21,7 @@ def save_model(model: Model = None,
     """
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-
+    print(os.environ.get("MODEL_TARGET"))
     if os.environ.get("MODEL_TARGET") == "mlflow":
 
         # retrieve mlflow env params
@@ -44,6 +44,7 @@ def save_model(model: Model = None,
                             artifact_path="model",
                             keras_module="tensorflow.keras",
                             registered_model_name=os.environ.get("MLFLOW_MODEL_NAME"))
+        print("\n✅ data saved on mlflow")
         return None
 
     print(Fore.BLUE + "\nSave model to local disk..." + Style.RESET_ALL)
