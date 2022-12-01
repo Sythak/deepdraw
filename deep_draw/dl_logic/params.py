@@ -11,7 +11,7 @@ format_data = 'tfrecords' # 'npy' or 'tfrecords'
 LOCAL_REGISTRY_PATH = os.getenv('LOCAL_REGISTRY_PATH')
 root = '../../raw_data/npy'
 source_npy = 'local' # 'local' or 'quickdraw'
-storage_tfr = 'local' # 'local' or 'gcp'
+storage_tfr = 'local' # 'local' or 'gcs'
 
 # size params
 max_items_per_class= 100000

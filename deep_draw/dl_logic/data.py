@@ -8,7 +8,8 @@ from yaml.loader import SafeLoader
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
-from deep_draw.dl_logic.params import NUM_CLASSES, batch_size, source_npy
+from deep_draw.dl_logic.params import NUM_CLASSES, batch_size, source_npy, storage_tfr
+from google.cloud import storage
 
 def load_data_npy(test_size, max_items_per_class):
     if source_npy == 'local':
@@ -189,11 +190,27 @@ def get_dataset_multi(tfr_dir: str = "/content/", pattern: str = "*.tfrecords"):
 
     return dataset
 
+def get_dataset_multi_gcs(files):
+    #create the dataset
+    dataset = tf.data.TFRecordDataset(files)
+    dataset = dataset.map(parse_tfr_element)
+    return dataset
+
 def load_tfrecords_dataset(source_type = 'train', batch_size=32):
     # Load dataset
-    dataset = get_dataset_multi(tfr_dir='../../raw_data/tfrecords/', pattern=f"*_{source_type}.tfrecords")
-    dataset = dataset.batch(batch_size)
-    dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, y))
+    if storage_tfr == 'local':
+        dataset = get_dataset_multi(tfr_dir='../../raw_data/tfrecords/', pattern=f"*_{source_type}.tfrecords")
+        dataset = dataset.batch(batch_size)
+        dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, y))
+
+    if storage_tfr == 'gcs':
+        client = storage.Client(project='deep-draw-project')
+        bucket = client.bucket(bucket_name='tfrecords-files')
+        records = [os.path.join('gs://tfrecords-files/', f.name) for f in
+                 bucket.list_blobs()]
+        data_records = [elem for elem in records if f"_{source_type}" in elem]
+        dataset = get_dataset_multi_gcs(data_records)
+
     return dataset
 
 
