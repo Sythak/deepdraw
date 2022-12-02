@@ -3,15 +3,16 @@ from colorama import Fore, Style
 from tensorflow.keras import Model, Sequential, layers, regularizers, optimizers
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense
 from tensorflow.keras.callbacks import EarlyStopping
-from deep_draw.dl_logic.params import NUM_CLASSES
+from deep_draw.dl_logic.params import NUM_CLASSES, batch_size
 import numpy as np
 from typing import Tuple
 import os
 
 
-def initialize_rnn() -> Model:
+def initialize_rnn_tfrecords() -> Model:
     """
-    Initialize the Recurrent Neural Network with random weights
+    Initialize the Recurrent Neural Network
+    Note: Padding & Normalisation already done at the creation of tfrecords files
     """
     print(Fore.BLUE + "\nInitialize model..." + Style.RESET_ALL)
 
@@ -19,32 +20,20 @@ def initialize_rnn() -> Model:
 
     model = Sequential()
 
-    model.add(layers.Embedding())#Embedding content : input_dim, output_dim
+    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= True, input_shape=(1102,5)))
+    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= False))
 
-    model.add(layers.LSTM(16, activation= 'tanh', return_sequences= True, recurrent_dropout= 0.3))
-
-    model.add(layers.LSTM(32, activation= 'tanh', return_sequences= True, recurrent_dropout= 0.3))
-
-    model.add(layers.LSTM(64, activation= 'tanh', return_sequences= True, recurrent_dropout= 0.3))
-
-    model.add(Dense(128, activation='relu'))
-
+    model.add(Dense(50, activation='relu'))
     model.add(Dense(num_classes, activation = 'softmax'))
 
     print("\n✅ model initialized")
 
     return model
 
-def initialize_rnn_tfrecords() -> Model:
-    """
-    Initialize the Recurrent Neural Network with random weights
-    """
-    pass
 
-
-def compile_rnn(model: Model) -> Model:
+def compile_rnn_tfrecords(model: Model) -> Model:
     """
-    Compile the RNN model
+    Compile the RNN model with y not one-hot encoded
     """
     model.compile(
         optimizer='rmsprop',
@@ -54,18 +43,12 @@ def compile_rnn(model: Model) -> Model:
     print("\n✅ model compiled")
     return model
 
-def compile_rnn_tfrecords(model: Model) -> Model:
-    """
-    Compile the RNN model
-    """
-    pass
 
-def train_rnn(model: Model,
-                X: np.ndarray,
-                y: np.ndarray,
-                batch_size=64,
-                patience=5,
-                validation_split=0.3,
+def train_rnn_tfrecords(model: Model,
+                dataset_train,
+                dataset_val,
+                batch_size=32,
+                patience=10,
                 epochs = 100) -> Tuple[Model, dict]:
     """
     Fit model and return a the tuple (fitted_model, history)
@@ -78,32 +61,19 @@ def train_rnn(model: Model,
                        restore_best_weights=True,
                        verbose=0)
 
-    history = model.fit(X,
-                        y,
-                        validation_split=validation_split,
+    history = model.fit(dataset_train,
+                        validation_data=dataset_val,
                         epochs=epochs,
                         batch_size=batch_size,
                         callbacks=[es],
                         verbose=1)
 
-    print(f"\n✅ model trained ({len(X)} rows)")
+    print(f"\n✅ model trained")
 
     return model, history
 
-def train_rnn_tfrecords(model: Model,
-                dataset_train,
-                dataset_val,
-                batch_size=32,
-                patience=10,
-                epochs = 100) -> Tuple[Model, dict]:
-    """
-    Fit model and return a the tuple (fitted_model, history)
-    """
-    pass
-
-def evaluate_rnn(model: Model,
-                   X: np.ndarray,
-                   y: np.ndarray,
+def evaluate_rnn_tfrecords(model: Model,
+                   dataset_test,
                    batch_size=64) -> Tuple[Model, dict]:
     """
     Evaluate trained model performance on dataset
@@ -116,8 +86,7 @@ def evaluate_rnn(model: Model,
         return None
 
     metrics = model.evaluate(
-        x=X,
-        y=y,
+        dataset_test,
         batch_size=batch_size,
         verbose=1,
     #   callbacks=None,
@@ -129,11 +98,3 @@ def evaluate_rnn(model: Model,
     print(f"\n✅ model evaluated: loss {round(loss, 2)} accuracy {round(accuracy, 2)}")
 
     return metrics
-
-def evaluate_rnn_tfrecords(model: Model,
-                   dataset_test,
-                   batch_size=64) -> Tuple[Model, dict]:
-    """
-    Evaluate trained model performance on dataset
-    """
-    pass

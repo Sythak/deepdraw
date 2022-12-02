@@ -8,10 +8,11 @@ import json
 
 from deep_draw.dl_logic.preprocessor import image_preprocess, y_to_categorical
 from deep_draw.dl_logic.cnn import initialize_cnn, compile_cnn, train_cnn_npy, evaluate_cnn, train_cnn_tfrecords, initialize_cnn_tfrecords, compile_cnn_tfrecords, evaluate_cnn_tfrecords
+from deep_draw.dl_logic.rnn import initialize_rnn_tfrecords, compile_rnn_tfrecords, train_rnn_tfrecords, evaluate_rnn_tfrecords
 from deep_draw.dl_logic.data import load_data_npy
 from deep_draw.dl_logic.params import format_data, root, max_items_per_class, NUM_CLASSES, test_size, learning_rate, patience, batch_size, epochs, validation_split
 from deep_draw.dl_logic.data import load_tfrecords_dataset
-from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH
+from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH, model_selection
 from deep_draw.dl_logic.registry import save_model, load_model, get_model_version
 import yaml
 from yaml.loader import SafeLoader
@@ -42,7 +43,7 @@ def preprocess_train_eval():
             validation_split=validation_split,
 
             # Package behavior
-            context="train",
+            context="train_cnn",
 
             # Data source
             model_version=get_model_version(),
@@ -59,7 +60,7 @@ def preprocess_train_eval():
             epochs=epochs,
             validation_split=validation_split,
             # Package behavior
-            context="test",
+            context="test_cnn",
             # Data source
             model_version=get_model_version(),
             )
@@ -68,6 +69,8 @@ def preprocess_train_eval():
 
     if format_data == 'tfrecords':
         dataset_train = load_tfrecords_dataset(source_type = 'train', batch_size=batch_size)
+        for e in dataset_train.batch(2).take(1):
+            print(e)
         dataset_val = load_tfrecords_dataset(source_type = 'val', batch_size=batch_size)
         dataset_test = load_tfrecords_dataset(source_type = 'test', batch_size=batch_size)
 
@@ -76,49 +79,98 @@ def preprocess_train_eval():
             class_names = yaml.load(f, Loader=SafeLoader)
 
         model = None
-        if model is None:
-            model = initialize_cnn_tfrecords()
-        model = compile_cnn_tfrecords(model)
 
-        model, history = train_cnn_tfrecords(model,
-                                            dataset_train,
-                                            dataset_val,
-                                            batch_size=batch_size,
-                                            patience=patience,
-                                            epochs = epochs)
-        params_train = dict(
-            # Model parameters
-            learning_rate=learning_rate,
-            batch_size=batch_size,
-            patience=patience,
-            epochs=epochs,
+        if model_selection == 'cnn':
 
-            # Package behavior
-            context="train",
+            if model is None:
+                model = initialize_cnn_tfrecords()
+            model = compile_cnn_tfrecords(model)
 
-            # Data source
-            model_version=get_model_version(),
-            )
+            model, history = train_cnn_tfrecords(model,
+                                                dataset_train,
+                                                dataset_val,
+                                                batch_size=batch_size,
+                                                patience=patience,
+                                                epochs = epochs)
+            params_train = dict(
+                # Model parameters
+                learning_rate=learning_rate,
+                batch_size=batch_size,
+                patience=patience,
+                epochs=epochs,
 
-        res = history.history['val_accuracy'][-1]
-        save_model(model, params=params_train, metrics=dict(accuracy=res))
+                # Package behavior
+                context="train_cnn",
 
-        params_test = dict(
-            # Model parameters
-            learning_rate=learning_rate,
-            batch_size=batch_size,
-            patience=patience,
-            epochs=epochs,
+                # Data source
+                model_version=get_model_version(),
+                )
 
-            # Package behavior
-            context="test",
+            res = history.history['val_accuracy'][-1]
+            save_model(model, params=params_train, metrics=dict(accuracy=res))
 
-            # Data source
-            model_version=get_model_version(),
-            )
+            params_test = dict(
+                # Model parameters
+                learning_rate=learning_rate,
+                batch_size=batch_size,
+                patience=patience,
+                epochs=epochs,
 
-        accuracy_test = evaluate_cnn_tfrecords(model, dataset_test, batch_size=batch_size)['accuracy']
-        save_model(params=params_test, metrics=dict(accuracy=accuracy_test))
+                # Package behavior
+                context="test_c",
+
+                # Data source
+                model_version=get_model_version(),
+                )
+
+            accuracy_test = evaluate_cnn_tfrecords(model, dataset_test, batch_size=batch_size)['accuracy']
+            save_model(params=params_test, metrics=dict(accuracy=accuracy_test))
+
+        if model_selection == 'rnn':
+            if model is None:
+                model = initialize_rnn_tfrecords()
+            model = compile_rnn_tfrecords(model)
+
+            model, history = train_rnn_tfrecords(model,
+                                                dataset_train,
+                                                dataset_val,
+                                                batch_size=batch_size,
+                                                patience=patience,
+                                                epochs = epochs)
+
+            params_train = dict(
+                # Model parameters
+                learning_rate=learning_rate,
+                batch_size=batch_size,
+                patience=patience,
+                epochs=epochs,
+
+                # Package behavior
+                context="train_rnn",
+
+                # Data source
+                model_version=get_model_version(),
+                )
+
+            res = history.history['val_accuracy'][-1]
+            save_model(model, params=params_train, metrics=dict(accuracy=res))
+
+            params_test = dict(
+                # Model parameters
+                learning_rate=learning_rate,
+                batch_size=batch_size,
+                patience=patience,
+                epochs=epochs,
+
+                # Package behavior
+                context="test_rnn",
+
+                # Data source
+                model_version=get_model_version(),
+                )
+
+            accuracy_test = evaluate_rnn_tfrecords(model, dataset_test, batch_size=batch_size)['accuracy']
+            save_model(params=params_test, metrics=dict(accuracy=accuracy_test))
 
     return class_names
 
