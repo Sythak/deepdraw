@@ -177,7 +177,7 @@ def pred(X_pred):
     y_pred = model.predict(X_pred)
     index = np.argmax(y_pred, axis=1)
 
-    path_yaml= "deep_draw/dl_logic/test_categories.yaml"
+    path_yaml= "deep_draw/dl_logic/categories.yaml"
     # Open the file and load the file
     with open(path_yaml) as f:
         class_names = yaml.load(f, Loader=SafeLoader)

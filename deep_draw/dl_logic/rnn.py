@@ -19,25 +19,13 @@ def initialize_rnn_tfrecords() -> Model:
     print(Fore.BLUE + "\nInitialize model..." + Style.RESET_ALL)
 
     num_classes = NUM_CLASSES
-
     model = Sequential()
 
     model.add(layers.Masking(mask_value=1000, input_shape=(1102,3)))
+    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= True))
+    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= False))
 
-    model.add(layers.Conv1D(48, (5), activation = 'relu'))
-    model.add(Dropout(0.3))
-    model.add(layers.Conv1D(64, (5), activation = 'relu'))
-    model.add(Dropout(0.3))
-    model.add(layers.Conv1D(96, (3), activation = 'relu'))
-    model.add(Dropout(0.3))
-
-    model.add(layers.LSTM(units = 128, activation= 'tanh', return_sequences= True))
-    model.add(Dropout(0.3))
-    model.add(layers.LSTM(units = 128, activation= 'tanh', return_sequences= False))
-    model.add(Dropout(0.3))
-
-    model.add(Dense(512, activation='relu'))
-    model.add(Dropout(0.3))
+    model.add(Dense(50, activation='relu'))
     model.add(Dense(num_classes, activation = 'softmax'))
 
     print("\n✅ model initialized")
