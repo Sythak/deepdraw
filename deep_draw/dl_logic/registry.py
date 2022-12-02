@@ -164,3 +164,22 @@ def upload_gcs(bucket_name: str, local_path, destination_blob_name):
     print(
         f"File {local_path} uploaded to {destination_blob_name}."
     )
+
+def download_model_mlflow():
+    stage = "Production"
+    model = None
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    # load model from mlflow
+    mlflow.set_tracking_uri(os.environ.get('MLFLOW_TRACKING_URI'))
+    model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME')}/{stage}"
+    model = mlflow.keras.load_model(model_uri=model_uri)
+
+    if model is not None:
+        model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", timestamp)
+        print(f"- model path: {model_path}")
+        model.save(model_path)
+
+    return model
+
+if __name__ == '__main__':
+    download_model_mlflow()
