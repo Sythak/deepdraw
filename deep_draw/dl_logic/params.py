@@ -18,7 +18,7 @@ storage_tfr = 'local' # 'local' or 'gcs'
 
 # size params
 max_items_per_class= 100000
-NUM_CLASSES = 10
+NUM_CLASSES = 100
 test_size=0.2
 val_size = 0.3
 
