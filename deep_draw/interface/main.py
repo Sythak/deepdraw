@@ -69,8 +69,6 @@ def preprocess_train_eval():
 
     if format_data == 'tfrecords':
         dataset_train = load_tfrecords_dataset(source_type = 'train', batch_size=batch_size)
-        for e in dataset_train.batch(2).take(1):
-            print(e)
         dataset_val = load_tfrecords_dataset(source_type = 'val', batch_size=batch_size)
         dataset_test = load_tfrecords_dataset(source_type = 'test', batch_size=batch_size)
 
@@ -117,7 +115,7 @@ def preprocess_train_eval():
                 epochs=epochs,
 
                 # Package behavior
-                context="test_c",
+                context="test_cnn",
 
                 # Data source
                 model_version=get_model_version(),
@@ -179,7 +177,7 @@ def pred(X_pred):
     y_pred = model.predict(X_pred)
     index = np.argmax(y_pred, axis=1)
 
-    path_yaml= "deep_draw/dl_logic/categories.yaml"
+    path_yaml= "deep_draw/dl_logic/test_categories.yaml"
     # Open the file and load the file
     with open(path_yaml) as f:
         class_names = yaml.load(f, Loader=SafeLoader)

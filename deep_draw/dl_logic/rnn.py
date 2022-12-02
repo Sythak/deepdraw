@@ -1,7 +1,7 @@
 from colorama import Fore, Style
 
 from tensorflow.keras import Model, Sequential, layers, regularizers, optimizers
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense
+from tensorflow.keras.layers import Dense, Masking
 from tensorflow.keras.callbacks import EarlyStopping
 from deep_draw.dl_logic.params import NUM_CLASSES, batch_size
 import numpy as np
@@ -20,7 +20,8 @@ def initialize_rnn_tfrecords() -> Model:
 
     model = Sequential()
 
-    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= True, input_shape=(1102,5)))
+    model.add(layers.Masking(mask_value=1000, input_shape=(1102,3)))
+    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= True))
     model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= False))
 
     model.add(Dense(50, activation='relu'))

@@ -26,5 +26,5 @@ val_size = 0.3
 learning_rate = 0.001
 batch_size = 32
 patience = 5
-epochs = 100
+epochs = 1
 validation_split=0.3
