@@ -10,7 +10,6 @@ raw_data/*
 data_npy
 **/*.svg
 **/*.gif
-**/*.png
 **/*.npy
 **/*.tfrecords
 .DS_Store
