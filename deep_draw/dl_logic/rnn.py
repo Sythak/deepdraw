@@ -1,7 +1,7 @@
 from colorama import Fore, Style
 
 from tensorflow.keras import Model, Sequential, layers, regularizers, optimizers
-from tensorflow.keras.layers import Dense, Masking
+from tensorflow.keras.layers import Dense, Masking, Conv1D, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
 from deep_draw.dl_logic.params import NUM_CLASSES, batch_size
 import numpy as np
@@ -21,10 +21,21 @@ def initialize_rnn_tfrecords() -> Model:
     model = Sequential()
 
     model.add(layers.Masking(mask_value=1000, input_shape=(1102,3)))
-    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= True))
-    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= False))
 
-    model.add(Dense(50, activation='relu'))
+    model.add(layers.Conv1D(48, (5), activation = 'relu'))
+    model.add(Dropout(0.3))
+    model.add(layers.Conv1D(64, (5), activation = 'relu'))
+    model.add(Dropout(0.3))
+    model.add(layers.Conv1D(96, (3), activation = 'relu'))
+    model.add(Dropout(0.3))
+
+    model.add(layers.LSTM(units = 128, activation= 'tanh', return_sequences= True))
+    model.add(Dropout(0.3))
+    model.add(layers.LSTM(units = 128, activation= 'tanh', return_sequences= False))
+    model.add(Dropout(0.3))
+
+    model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.3))
     model.add(Dense(num_classes, activation = 'softmax'))
 
     print("\n✅ model initialized")
