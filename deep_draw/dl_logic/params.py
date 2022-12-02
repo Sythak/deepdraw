@@ -5,17 +5,20 @@ from dotenv import load_dotenv, find_dotenv
 env_path = find_dotenv()
 load_dotenv(env_path)
 
+model_selection = 'rnn' # 'rnn' or 'cnn'
 format_data = 'tfrecords' # 'npy' or 'tfrecords'
 
 # path params
 LOCAL_REGISTRY_PATH = os.getenv('LOCAL_REGISTRY_PATH')
 root = '../../raw_data/npy'
+
+# storage input data
 source_npy = 'quickdraw' # 'local' or 'quickdraw'
-storage_tfr = 'gcs' # 'local' or 'gcs'
+storage_tfr = 'local' # 'local' or 'gcs'
 
 # size params
 max_items_per_class= 100000
-NUM_CLASSES = 50
+NUM_CLASSES = 10
 test_size=0.2
 val_size = 0.3
 
