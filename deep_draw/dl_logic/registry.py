@@ -7,7 +7,7 @@ from mlflow.tracking import MlflowClient
 import os
 import pickle
 import glob
-from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH
+from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH, model_selection
 
 from tensorflow.keras import Model, models
 
@@ -40,10 +40,16 @@ def save_model(model: Model = None,
 
             # STEP 3: push model to mlflow
             if model:
-                mlflow.keras.log_model(keras_model=model,
-                            artifact_path="model",
-                            keras_module="tensorflow.keras",
-                            registered_model_name=os.environ.get("MLFLOW_MODEL_NAME"))
+                if model_selection == 'rnn':
+                    mlflow.keras.log_model(keras_model=model,
+                                artifact_path="model",
+                                keras_module="tensorflow.keras",
+                                registered_model_name=os.environ.get("MLFLOW_MODEL_NAME_RNN"))
+                elif model_selection == 'cnn':
+                    mlflow.keras.log_model(keras_model=model,
+                                artifact_path="model",
+                                keras_module="tensorflow.keras",
+                                registered_model_name=os.environ.get("MLFLOW_MODEL_NAME"))
         print("\n✅ data saved on mlflow")
         return None
 
@@ -86,9 +92,14 @@ def load_model(save_copy_locally=False) -> Model:
         # load model from mlflow
         model = None
         mlflow.set_tracking_uri(os.environ.get('MLFLOW_TRACKING_URI'))
-        model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME')}/{stage}"
-        model = mlflow.keras.load_model(model_uri=model_uri)
-        return model
+        if model_selection == 'rnn':
+            model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME_RNN')}/{stage}"
+            model = mlflow.keras.load_model(model_uri=model_uri)
+            return model
+        elif model_selection == "cnn":
+            model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME')}/{stage}"
+            model = mlflow.keras.load_model(model_uri=model_uri)
+            return model
 
     print(Fore.BLUE + "\nLoad model from local disk..." + Style.RESET_ALL)
 
@@ -117,8 +128,10 @@ def get_model_version(stage="Production"):
     if os.environ.get("MODEL_TARGET") == "mlflow":
 
         mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI"))
-
-        mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")
+        if model_selection == 'rnn':
+            mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME_RNN")
+        elif model_selection == 'cnn':
+            mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")
 
         client = MlflowClient()
 
@@ -171,7 +184,10 @@ def download_model_mlflow():
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     # load model from mlflow
     mlflow.set_tracking_uri(os.environ.get('MLFLOW_TRACKING_URI'))
-    model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME')}/{stage}"
+    if model_selection == 'rnn':
+        model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME_RNN')}/{stage}"
+    elif model_selection == 'cnn':
+        model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME')}/{stage}"
     model = mlflow.keras.load_model(model_uri=model_uri)
 
     if model is not None:

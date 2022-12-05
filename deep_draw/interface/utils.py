@@ -337,3 +337,70 @@ def image_from_dict(api_dict, dtype='uint8', encoding='utf-8'):
                       api_dict.get('channel')))
 
     return img
+
+
+def image_to_dict_RNN(image_array, dtype='float32', encoding='utf-8'):
+    '''
+    Convert an ndarray representing a batch of images into a compressed string
+    ----------
+    Parameters
+    ----------
+    imgArray: a np array representing an image
+    ----------
+    Returns
+    ----------
+    dict(image: str,
+         height: int,
+         width: int,
+         channel: int)
+    '''
+    # Get current shape, only for single image
+    if image_array.ndim == 3:
+        size, height, width = image_array.shape
+    # Ensure uint8
+    image_array = image_array.astype(dtype)
+    # Flatten image
+    image_array = image_array.reshape(size * height * width)
+    # Encode in b64 for compression
+    image_array = base64.b64encode(image_array)
+    # Prepare image for POST request, ' cannot be serialized in json
+    image_array = image_array.decode(encoding).replace("'", '"')
+    api_dict = {'image': image_array, 'size': size, 'height': height, 'width': width}
+    return api_dict
+
+
+def image_from_dict_RNN(api_dict, dtype='float32', encoding='utf-8'):
+    '''
+    Convert an dict representing a batch of images into a ndarray
+    ----------
+    Parameters
+    ----------
+    api_dict: a dict(image, height, width, channel) representing an image
+    dtype: target data type for ndarray
+    encoding: encoding used for image string
+    ----------
+    Returns
+    ----------
+    ndarray of shape (size, height, width, channel)
+    '''
+    # Decode image string
+    img = base64.b64decode(bytes(api_dict.get('image'), encoding))
+    # Convert to np.ndarray and ensure dtype
+    img = np.frombuffer(img, dtype=dtype)
+    # Reshape to original shape
+    img = img.reshape((api_dict.get('height'),
+                      api_dict.get('width')))
+
+    return img
+
+
+
+def padding(stroke, max_len=500):
+    """Converts from stroke-3 to stroke-5 format and pads to given length."""
+    # (But does not insert special start token).
+
+    result = np.ones((max_len, 3), dtype=float)*1000
+    length = len(stroke)
+    assert length <= max_len
+    result[0:length, 0:3] = stroke[:, 0:3]
+    return result

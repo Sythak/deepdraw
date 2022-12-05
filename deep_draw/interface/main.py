@@ -73,8 +73,12 @@ def preprocess_train_eval():
         dataset_test = load_tfrecords_dataset(source_type = 'test', batch_size=batch_size)
 
         # Open the file and load the file
-        with open('../dl_logic/categories_rnn_50.yaml') as f:
-            class_names = yaml.load(f, Loader=SafeLoader)
+        if model_selection == 'rnn':
+            with open('../dl_logic/categories_rnn_50.yaml') as f:
+                class_names = yaml.load(f, Loader=SafeLoader)
+        elif model_selection == 'cnn':
+            with open('../dl_logic/categories.yaml') as f:
+                class_names = yaml.load(f, Loader=SafeLoader)
 
         model = None
 
@@ -177,7 +181,10 @@ def pred(X_pred):
     y_pred = model.predict(X_pred)
     index = np.argmax(y_pred, axis=1)
 
-    path_yaml= "deep_draw/dl_logic/categories_rnn_50.yaml"
+    if model_selection == 'rnn':
+        path_yaml= "deep_draw/dl_logic/categories_rnn_50.yaml"
+    elif model_selection == 'cnn':
+        path_yaml= "deep_draw/dl_logic/categories.yaml"
     # Open the file and load the file
     with open(path_yaml) as f:
         class_names = yaml.load(f, Loader=SafeLoader)
