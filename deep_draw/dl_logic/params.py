@@ -17,14 +17,14 @@ source_npy = 'quickdraw' # 'local' or 'quickdraw'
 storage_tfr = 'local' # 'local' or 'gcs'
 
 # size params
-max_items_per_class= 100000
-NUM_CLASSES = 100
+max_items_per_class= 10000
+NUM_CLASSES = 50
 test_size=0.2
 val_size = 0.3
 
 # model params
 learning_rate = 0.001
 batch_size = 32
-patience = 5
+patience = 2
 epochs = 1
 validation_split=0.3
