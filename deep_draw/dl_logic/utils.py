@@ -337,3 +337,39 @@ def image_from_dict(api_dict, dtype='uint8', encoding='utf-8'):
                       api_dict.get('channel')))
 
     return img
+
+def image_from_dict_RNN(api_dict, dtype='float32', encoding='utf-8'):
+    '''
+    Convert an dict representing a batch of images into a ndarray
+    ----------
+    Parameters
+    ----------
+    api_dict: a dict(image, height, width, channel) representing an image
+    dtype: target data type for ndarray
+    encoding: encoding used for image string
+    ----------
+    Returns
+    ----------
+    ndarray of shape (size, height, width, channel)
+    '''
+    # Decode image string
+    img = base64.b64decode(bytes(api_dict.get('image'), encoding))
+    # Convert to np.ndarray and ensure dtype
+    img = np.frombuffer(img, dtype=dtype)
+    # Reshape to original shape
+    img = img.reshape((api_dict.get('size'),
+                        api_dict.get('height'),
+                      api_dict.get('width')))
+
+    return img
+
+
+def padding(stroke, max_len=500):
+    """Converts from stroke-3 to stroke-5 format and pads to given length."""
+    # (But does not insert special start token).
+
+    result = np.ones((max_len, 3), dtype=float)*1000
+    length = len(stroke)
+    assert length <= max_len
+    result[0:length, 0:3] = stroke[:, 0:3]
+    return result

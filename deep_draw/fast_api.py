@@ -6,7 +6,7 @@ import tensorflow as tf
 import json
 from pydantic import BaseModel
 import numpy as np
-from deep_draw.dl_logic.utils import image_from_dict
+from deep_draw.dl_logic.utils import image_from_dict, image_from_dict_RNN
 
 class Item(BaseModel):
     image: str
@@ -14,6 +14,12 @@ class Item(BaseModel):
     height : int
     width : int
     channel : int
+
+class Item_RNN(BaseModel):
+    image: str
+    size: int
+    height : int
+    width : int
 
 app = FastAPI()
 app.add_middleware(
@@ -28,6 +34,13 @@ app.add_middleware(
 async def image(item: Item):
     np_array_image = image_from_dict(dict(item))
     prediction, first_5_stats = pred((np_array_image/255.))
+    return {'test' : prediction, "class" : first_5_stats}
+
+
+@app.post("/predictRNN/")
+async def image(item: Item_RNN):
+    np_array_image = image_from_dict_RNN(dict(item))
+    prediction, first_5_stats = pred(np_array_image)
     return {'test' : prediction, "class" : first_5_stats}
 
 
