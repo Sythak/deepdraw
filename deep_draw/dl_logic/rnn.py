@@ -21,7 +21,7 @@ def initialize_rnn_tfrecords() -> Model:
     num_classes = NUM_CLASSES
     model = Sequential()
 
-    model.add(layers.Masking(mask_value=1000, input_shape=(1102,3)))
+    model.add(layers.Masking(mask_value=1000, input_shape=(1920,3)))
     model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= True))
     model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= False))
 
@@ -38,7 +38,7 @@ def compile_rnn_tfrecords(model: Model) -> Model:
     Compile the RNN model with y not one-hot encoded
     """
     model.compile(
-        optimizer='rmsprop',
+        optimizer='adam',
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy'])
 

@@ -226,7 +226,7 @@ def load_tfrecords_dataset(source_type = 'train', batch_size=32):
         if model_selection == 'rnn':
             dataset = get_dataset_multi(tfr_dir='../../raw_data/tfrecords/', pattern=f"*_{source_type}.tfrecords")
             dataset = dataset.batch(batch_size)
-            dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32), y))
+            #dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32), y))
 
     if storage_tfr == 'gcs':
         client = storage.Client(project='deep-draw-project')
