@@ -33,14 +33,14 @@ app.add_middleware(
 @app.post("/predict/")
 async def image(item: Item):
     np_array_image = image_from_dict(dict(item))
-    prediction, first_5_stats = pred((np_array_image/255.))
+    prediction, first_5_stats = pred((np_array_image/255.), select_model='cnn')
     return {'test' : prediction, "class" : first_5_stats}
 
 
 @app.post("/predictRNN/")
 async def image(item: Item_RNN):
     np_array_image = image_from_dict_RNN(dict(item))
-    prediction, first_5_stats = pred(np_array_image)
+    prediction, first_5_stats = pred(np_array_image, select_model='rnn')
     return {'test' : prediction, "class" : first_5_stats}
 
 

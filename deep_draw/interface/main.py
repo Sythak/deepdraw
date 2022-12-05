@@ -176,14 +176,14 @@ def preprocess_train_eval():
 
     return class_names
 
-def pred(X_pred):
-    model = load_model()
+def pred(X_pred, select_model='cnn'):
+    model = load_model(select_model=select_model)
     y_pred = model.predict(X_pred)
     index = np.argmax(y_pred, axis=1)
 
-    if model_selection == 'rnn':
+    if select_model == 'rnn':
         path_yaml= "deep_draw/dl_logic/categories_rnn_50.yaml"
-    elif model_selection == 'cnn':
+    elif select_model == 'cnn':
         path_yaml= "deep_draw/dl_logic/categories.yaml"
     # Open the file and load the file
     with open(path_yaml) as f:
