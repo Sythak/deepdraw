@@ -89,7 +89,7 @@ def save_model(model: Model = None,
     return None
 
 
-def load_model(save_copy_locally=False) -> Model:
+def load_model(select_model, save_copy_locally=False) -> Model:
     """
     load the latest saved model, return None if no model found
     """
@@ -101,11 +101,11 @@ def load_model(save_copy_locally=False) -> Model:
         # load model from mlflow
         model = None
         mlflow.set_tracking_uri(os.environ.get('MLFLOW_TRACKING_URI'))
-        if model_selection == 'rnn':
+        if select_model == 'rnn':
             model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME_RNN')}/{stage}"
             model = mlflow.keras.load_model(model_uri=model_uri)
             return model
-        elif model_selection == "cnn":
+        elif select_model == "cnn":
             model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME')}/{stage}"
             model = mlflow.keras.load_model(model_uri=model_uri)
             return model
@@ -113,9 +113,9 @@ def load_model(save_copy_locally=False) -> Model:
     print(Fore.BLUE + "\nLoad model from local disk..." + Style.RESET_ALL)
 
     # get latest model version
-    if model_selection == 'cnn':
+    if select_model == 'cnn':
         model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
-    elif model_selection == 'rnn':
+    elif select_model == 'rnn':
         model_directory = os.path.join(LOCAL_REGISTRY_PATH_RNN, "models")
 
     results = glob.glob(f"{model_directory}/*")
