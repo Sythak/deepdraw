@@ -7,7 +7,7 @@ from mlflow.tracking import MlflowClient
 import os
 import pickle
 import glob
-from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH, model_selection
+from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH, LOCAL_REGISTRY_PATH_RNN, model_selection
 
 from tensorflow.keras import Model, models
 
@@ -57,21 +57,30 @@ def save_model(model: Model = None,
 
     # save params
     if params is not None:
-        params_path = os.path.join(LOCAL_REGISTRY_PATH, "params", timestamp + ".pickle")
+        if model_selection == 'cnn':
+            params_path = os.path.join(LOCAL_REGISTRY_PATH, "params", timestamp + ".pickle")
+        elif model_selection == 'rnn':
+            params_path = os.path.join(LOCAL_REGISTRY_PATH_RNN, "params", timestamp + ".pickle")
         print(f"- params path: {params_path}")
         with open(params_path, "wb") as file:
             pickle.dump(params, file)
 
     # save metrics
     if metrics is not None:
-        metrics_path = os.path.join(LOCAL_REGISTRY_PATH, "metrics", timestamp + ".pickle")
+        if model_selection == 'cnn':
+            metrics_path = os.path.join(LOCAL_REGISTRY_PATH, "metrics", timestamp + ".pickle")
+        elif model_selection == 'rnn':
+            metrics_path = os.path.join(LOCAL_REGISTRY_PATH_RNN, "metrics", timestamp + ".pickle")
         print(f"- metrics path: {metrics_path}")
         with open(metrics_path, "wb") as file:
             pickle.dump(metrics, file)
 
     # save model
     if model is not None:
-        model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", timestamp)
+        if model_selection == 'cnn':
+            model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", timestamp)
+        elif model_selection == 'rnn':
+            model_path = os.path.join(LOCAL_REGISTRY_PATH_RNN, "models", timestamp)
         print(f"- model path: {model_path}")
         model.save(model_path)
 
@@ -104,7 +113,10 @@ def load_model(save_copy_locally=False) -> Model:
     print(Fore.BLUE + "\nLoad model from local disk..." + Style.RESET_ALL)
 
     # get latest model version
-    model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
+    if model_selection == 'cnn':
+        model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
+    elif model_selection == 'rnn':
+        model_directory = os.path.join(LOCAL_REGISTRY_PATH_RNN, "models")
 
     results = glob.glob(f"{model_directory}/*")
     if not results:
@@ -191,7 +203,10 @@ def download_model_mlflow():
     model = mlflow.keras.load_model(model_uri=model_uri)
 
     if model is not None:
-        model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", timestamp)
+        if model_selection == 'cnn':
+            model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", timestamp)
+        elif model_selection == 'rnn':
+            model_path = os.path.join(LOCAL_REGISTRY_PATH_RNN, "models", timestamp)
         print(f"- model path: {model_path}")
         model.save(model_path)
 

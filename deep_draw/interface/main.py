@@ -10,9 +10,9 @@ from deep_draw.dl_logic.preprocessor import image_preprocess, y_to_categorical
 from deep_draw.dl_logic.cnn import initialize_cnn, compile_cnn, train_cnn_npy, evaluate_cnn, train_cnn_tfrecords, initialize_cnn_tfrecords, compile_cnn_tfrecords, evaluate_cnn_tfrecords
 from deep_draw.dl_logic.rnn import initialize_rnn_tfrecords, compile_rnn_tfrecords, train_rnn_tfrecords, evaluate_rnn_tfrecords
 from deep_draw.dl_logic.data import load_data_npy
-from deep_draw.dl_logic.params import format_data, root, max_items_per_class, NUM_CLASSES, test_size, learning_rate, patience, batch_size, epochs, validation_split
+from deep_draw.dl_logic.params import format_data, max_items_per_class, test_size, learning_rate, patience, batch_size, epochs, validation_split
 from deep_draw.dl_logic.data import load_tfrecords_dataset
-from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH, model_selection
+from deep_draw.dl_logic.params import model_selection
 from deep_draw.dl_logic.registry import save_model, load_model, get_model_version
 import yaml
 from yaml.loader import SafeLoader

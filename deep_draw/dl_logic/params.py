@@ -10,6 +10,7 @@ format_data = 'tfrecords' # 'npy' or 'tfrecords'
 
 # path params
 LOCAL_REGISTRY_PATH = os.getenv('LOCAL_REGISTRY_PATH')
+LOCAL_REGISTRY_PATH_RNN = os.getenv('LOCAL_REGISTRY_PATH_RNN')
 root = '../../raw_data/npy'
 
 # storage input data
