@@ -4,9 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from deep_draw.interface.main import pred
 import tensorflow as tf
 import json
+import numpy as np
 from pydantic import BaseModel
 import numpy as np
 from deep_draw.dl_logic.utils import image_from_dict, image_from_dict_RNN
+from deep_draw.dl_logic.registry import load_model
+
 
 class Item(BaseModel):
     image: str
@@ -30,17 +33,20 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+model_rnn = load_model(select_model='rnn')
+model_cnn = load_model(select_model='cnn')
+
 @app.post("/predict/")
 async def image(item: Item):
     np_array_image = image_from_dict(dict(item))
-    prediction, first_5_stats = pred((np_array_image/255.), select_model='cnn')
+    prediction, first_5_stats = pred((np_array_image/255.), model=model_cnn, select_model='cnn')
     return {'test' : prediction, "class" : first_5_stats}
 
 
 @app.post("/predictRNN/")
 async def image(item: Item_RNN):
     np_array_image = image_from_dict_RNN(dict(item))
-    prediction, first_5_stats = pred(np_array_image, select_model='rnn')
+    prediction, first_5_stats = pred(np_array_image, model=model_rnn, select_model='rnn')
     return {'test' : prediction, "class" : first_5_stats}
 
 

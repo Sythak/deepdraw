@@ -162,8 +162,8 @@ try:
 
     #print(json_to_api_2)
     #url = 'https://deepdrawimage2-do5ciztupa-ew.a.run.app/predict/'
-    #url = 'http://127.0.0.1:8000/predictRNN'
-    url = 'https://deepdrawimagernncnn-do5ciztupa-ew.a.run.app/predictRNN/'
+    url = 'http://127.0.0.1:8000/predictRNN'
+    #url = 'https://deepdrawimagernncnn-do5ciztupa-ew.a.run.app/predictRNN/'
     with requests.Session() as s:
         response = s.post(url, json_to_api_2)
         dico = response.json()['class']

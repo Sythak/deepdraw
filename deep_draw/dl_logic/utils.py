@@ -338,7 +338,7 @@ def image_from_dict(api_dict, dtype='uint8', encoding='utf-8'):
 
     return img
 
-def image_from_dict_RNN(api_dict, dtype='float32', encoding='utf-8'):
+def image_from_dict_RNN(api_dict, dtype='float16', encoding='utf-8'):
     '''
     Convert an dict representing a batch of images into a ndarray
     ----------

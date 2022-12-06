@@ -98,9 +98,9 @@ try:
         bitmap_format = np.array(vector_to_raster([strokes], side=28)).reshape(1, 28, 28, 1)
         json_to_api = image_to_dict(bitmap_format)
         json_to_api_2 = json.dumps(json_to_api)
-        url = 'https://deepdrawimagernncnn-do5ciztupa-ew.a.run.app/predict/'
+        #url = 'https://deepdrawimagernncnn-do5ciztupa-ew.a.run.app/predict/'
         #url = 'https://deepdrawimage2-do5ciztupa-ew.a.run.app/predict/'
-        #url = 'http://127.0.0.1:8000/predict'
+        url = 'http://127.0.0.1:8000/predict'
         if st.button('submit'):
             with requests.Session() as s:
                 response = s.post(url, json_to_api_2)
