@@ -13,10 +13,9 @@ import io
 import requests
 from json import JSONEncoder
 
-change_session = iter([True, False]*100)
-
 if "none" not in st.session_state:
-    st.session_state["none"]=next(change_session)
+    st.session_state["none"]=True
+    mobile=False
 
 @st.experimental_memo
 def print_title(a=0):
@@ -70,20 +69,33 @@ def print_title(a=0):
                     'umbrella',
                     'wheel',
                     'windmill']
-
     draw_to = class_name_list[np.random.randint(50)]
     return draw_to
 
 # Create a canvas component
 st.set_page_config(page_title="Deep Draw", page_icon="🎨", layout="wide")
-draw_f = print_title()
-st.markdown(f"<h1 style='text-align: center; color: grey;'>Draw me a {draw_f.title()}</h1>", unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns((12,10,3))
+st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+device = st.radio('', ('Computer', 'Mobile'))
+
+if device == 'Mobile':
+    mobile=True
+    gap='0px'
+    ici='3'
+else:
+    mobile=False
+    gap='4px'
+    ici='6'
+
+draw_f = print_title()
+st.markdown(f"<h1 style='text-align: left; color: grey;'>Draw me a {draw_f.title()}</h1>", unsafe_allow_html=True)
+
+
+
+
+col1, col2= st.columns([60,40])
 
 with col1:
-    st.markdown("<h1 style='text-align: center; color: grey;'>Deep Draw RNN</h1>", unsafe_allow_html=True)
-
     canvas_result = st_canvas(
         fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
         stroke_width=1,
@@ -91,10 +103,11 @@ with col1:
         background_color="#eee",
         background_image=None,
         update_streamlit=True,
-        height=600,
+        height=340 if mobile else 500,
+        width=340 if mobile else 800,
         drawing_mode="freedraw",
         point_display_radius=0,
-        key="canva1" if  st.session_state["none"] else "canva2",
+        key=f'{"canva1" if st.session_state["none"] else "canva2"}{"1" if mobile else "2"}',
         initial_drawing=None
     )
 
@@ -173,7 +186,6 @@ except:
 
 
 with col2:
-    st.markdown("<h1 style='text-align: center; color: grey;'>Probabilities</h1>", unsafe_allow_html=True)
     plt.rcdefaults()
     fig, ax = plt.subplots()
     # Example data
@@ -202,13 +214,24 @@ with col2:
 
     @st.experimental_memo()
     def change_id():
-        st.session_state["none"]=next(change_session)
+        st.session_state["none"]=not st.session_state["none"]
         st.experimental_memo.clear()
         print_title(5)
 
     if st.button("next", on_click=change_id):
         pass
 
-    # except:
-    #     pass
-        #canvas_result.json_data["objects"][0]['path'] = None
+st.markdown(
+    '''<style>   div[data-testid=“stHorizontalBlock”]  {gap:'''+
+    gap+
+    ''';    \}</style>''',
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+   '''<style>  div.css-18e3th9
+     {
+    padding: 1rem '''+ici+'''em 10rem; '''
+    ''';    }</style>''',
+    unsafe_allow_html=True,
+)

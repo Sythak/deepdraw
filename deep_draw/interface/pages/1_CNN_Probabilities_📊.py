@@ -13,10 +13,8 @@ import io
 import requests
 from json import JSONEncoder
 
-change_session = iter([True, False]*100)
-
 if "none" not in st.session_state:
-    st.session_state["none"]=next(change_session)
+    st.session_state["none"]=True
 
 @st.experimental_memo
 def print_title(a=0):
@@ -141,7 +139,7 @@ with col1:
         background_color="#eee",
         background_image=None,
         update_streamlit=True,
-        height=600,
+        height=500,
         drawing_mode="freedraw",
         point_display_radius=0,
         key="canva1" if  st.session_state["none"] else "canva2",
@@ -241,11 +239,9 @@ with col2:
         st.pyplot(fig)
         del(dico)
 
-        #st.session_state["none"]=True
-
     @st.experimental_memo()
     def change_id():
-        st.session_state["none"]=next(change_session)
+        st.session_state["none"]=not st.session_state["none"]
         st.experimental_memo.clear()
         print_title(5)
 

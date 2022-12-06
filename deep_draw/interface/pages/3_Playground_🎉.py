@@ -13,10 +13,8 @@ import io
 import requests
 from json import JSONEncoder
 
-change_session = iter([True, False]*100)
-
 if "none" not in st.session_state:
-    st.session_state["none"]=next(change_session)
+    st.session_state["none"]=True
 
 @st.experimental_memo
 def print_title(a=0):
@@ -39,7 +37,8 @@ canvas_result = st_canvas(
     height=600,
     drawing_mode="freedraw",
     point_display_radius=0,
-    key="canvas",
+    key="canva1" if  st.session_state["none"] else "canva2",
+    initial_drawing=None,
 )
 try:
     if canvas_result.json_data is not None:
@@ -116,9 +115,10 @@ try:
 
     @st.experimental_memo()
     def change_id():
-        st.session_state["none"]=next(change_session)
+        st.session_state["none"]=not st.session_state["none"]
         st.experimental_memo.clear()
         print_title(5)
+
     if draw_f.title() == response.json()['test'].title():
         st.balloons()
         if st.button("next", on_click=change_id):
