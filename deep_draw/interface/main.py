@@ -176,8 +176,7 @@ def preprocess_train_eval():
 
     return class_names
 
-def pred(X_pred, select_model='cnn'):
-    model = load_model(select_model=select_model)
+def pred(X_pred, select_model='cnn', model=None):
     y_pred = model.predict(X_pred)
     index = np.argmax(y_pred, axis=1)
 
