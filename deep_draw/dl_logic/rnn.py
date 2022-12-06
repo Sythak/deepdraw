@@ -3,7 +3,7 @@ from colorama import Fore, Style
 from tensorflow.keras import Model, Sequential, layers, regularizers, optimizers
 from tensorflow.keras.layers import Dense, Masking, Conv1D, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
-from deep_draw.dl_logic.params import NUM_CLASSES, batch_size, patience, learning_rate, epochs
+from deep_draw.dl_logic.params import NUM_CLASSES_RNN, batch_size, patience, learning_rate, epochs
 from deep_draw.dl_logic.registry import load_model, save_model, get_model_version
 from deep_draw.dl_logic.data import load_tfrecords_dataset
 import numpy as np
@@ -18,7 +18,7 @@ def initialize_rnn_tfrecords() -> Model:
     """
     print(Fore.BLUE + "\nInitialize model..." + Style.RESET_ALL)
 
-    num_classes = NUM_CLASSES
+    num_classes = NUM_CLASSES_RNN
     model = Sequential()
 
     model.add(layers.Masking(mask_value=1000, input_shape=(1920,3)))
@@ -98,23 +98,3 @@ def evaluate_rnn_tfrecords(model: Model,
     print(f"\n✅ model evaluated: loss {round(loss, 2)} accuracy {round(accuracy, 2)}")
 
     return metrics
-
-if __name__ == "__main__" :
-    model=load_model()
-    dataset_test = load_tfrecords_dataset(source_type = 'test', batch_size=batch_size)
-    params_test = dict(
-                # Model parameters
-                learning_rate=learning_rate,
-                batch_size=batch_size,
-                patience=patience,
-                epochs=epochs,
-
-                # Package behavior
-                context="test_rnn",
-
-                # Data source
-                model_version=get_model_version(),
-                )
-
-    accuracy_test = evaluate_rnn_tfrecords(model, dataset_test, batch_size=batch_size)['accuracy']
-    save_model(params=params_test, metrics=dict(accuracy=accuracy_test))

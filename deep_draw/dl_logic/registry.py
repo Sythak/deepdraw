@@ -7,7 +7,7 @@ from mlflow.tracking import MlflowClient
 import os
 import pickle
 import glob
-from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH, LOCAL_REGISTRY_PATH_RNN, model_selection
+from deep_draw.dl_logic.params import LOCAL_REGISTRY_PATH, LOCAL_REGISTRY_PATH_RNN, train_model_selection
 
 from tensorflow.keras import Model, models
 
@@ -40,12 +40,12 @@ def save_model(model: Model = None,
 
             # STEP 3: push model to mlflow
             if model:
-                if model_selection == 'rnn':
+                if train_model_selection == 'rnn':
                     mlflow.keras.log_model(keras_model=model,
                                 artifact_path="model",
                                 keras_module="tensorflow.keras",
                                 registered_model_name=os.environ.get("MLFLOW_MODEL_NAME_RNN"))
-                elif model_selection == 'cnn':
+                elif train_model_selection == 'cnn':
                     mlflow.keras.log_model(keras_model=model,
                                 artifact_path="model",
                                 keras_module="tensorflow.keras",
@@ -57,9 +57,9 @@ def save_model(model: Model = None,
 
     # save params
     if params is not None:
-        if model_selection == 'cnn':
+        if train_model_selection == 'cnn':
             params_path = os.path.join(LOCAL_REGISTRY_PATH, "params", timestamp + ".pickle")
-        elif model_selection == 'rnn':
+        elif train_model_selection == 'rnn':
             params_path = os.path.join(LOCAL_REGISTRY_PATH_RNN, "params", timestamp + ".pickle")
         print(f"- params path: {params_path}")
         with open(params_path, "wb") as file:
@@ -67,9 +67,9 @@ def save_model(model: Model = None,
 
     # save metrics
     if metrics is not None:
-        if model_selection == 'cnn':
+        if train_model_selection == 'cnn':
             metrics_path = os.path.join(LOCAL_REGISTRY_PATH, "metrics", timestamp + ".pickle")
-        elif model_selection == 'rnn':
+        elif train_model_selection == 'rnn':
             metrics_path = os.path.join(LOCAL_REGISTRY_PATH_RNN, "metrics", timestamp + ".pickle")
         print(f"- metrics path: {metrics_path}")
         with open(metrics_path, "wb") as file:
@@ -77,9 +77,9 @@ def save_model(model: Model = None,
 
     # save model
     if model is not None:
-        if model_selection == 'cnn':
+        if train_model_selection == 'cnn':
             model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", timestamp)
-        elif model_selection == 'rnn':
+        elif train_model_selection == 'rnn':
             model_path = os.path.join(LOCAL_REGISTRY_PATH_RNN, "models", timestamp)
         print(f"- model path: {model_path}")
         model.save(model_path)
@@ -100,7 +100,7 @@ def load_model(select_model, save_copy_locally=False) -> Model:
 
         # load model from mlflow
         model = None
-        mlflow.set_tracking_uri(os.environ.get('MLFLOW_TRACKING_URI'))
+        mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI"))
         if select_model == 'rnn':
             model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME_RNN')}/{stage}"
             model = mlflow.keras.load_model(model_uri=model_uri)
@@ -140,19 +140,19 @@ def get_model_version(stage="Production"):
     if os.environ.get("MODEL_TARGET") == "mlflow":
 
         mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI"))
-        if model_selection == 'rnn':
+
+        if train_model_selection == 'rnn':
             mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME_RNN")
-        elif model_selection == 'cnn':
+
+        elif train_model_selection == 'cnn':
             mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")
-
         client = MlflowClient()
-
         try:
             version = client.get_latest_versions(name=mlflow_model_name, stages=[stage])
+
         except:
             return None
-
-        # check whether a version of the model exists in the given stage
+            # check whether a version of the model exists in the given stage
         if not version:
             return None
 
@@ -190,22 +190,22 @@ def upload_gcs(bucket_name: str, local_path, destination_blob_name):
         f"File {local_path} uploaded to {destination_blob_name}."
     )
 
-def download_model_mlflow():
+def download_model_mlflow(select_model):
     stage = "Production"
     model = None
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     # load model from mlflow
     mlflow.set_tracking_uri(os.environ.get('MLFLOW_TRACKING_URI'))
-    if model_selection == 'rnn':
+    if select_model == 'rnn':
         model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME_RNN')}/{stage}"
-    elif model_selection == 'cnn':
+    elif select_model == 'cnn':
         model_uri = f"models:/{os.environ.get('MLFLOW_MODEL_NAME')}/{stage}"
     model = mlflow.keras.load_model(model_uri=model_uri)
 
     if model is not None:
-        if model_selection == 'cnn':
+        if select_model == 'cnn':
             model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", timestamp)
-        elif model_selection == 'rnn':
+        elif select_model == 'rnn':
             model_path = os.path.join(LOCAL_REGISTRY_PATH_RNN, "models", timestamp)
         print(f"- model path: {model_path}")
         model.save(model_path)
@@ -213,4 +213,4 @@ def download_model_mlflow():
     return model
 
 if __name__ == '__main__':
-    download_model_mlflow()
+    get_model_version()

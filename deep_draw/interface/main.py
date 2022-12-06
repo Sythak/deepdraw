@@ -12,8 +12,8 @@ from deep_draw.dl_logic.rnn import initialize_rnn_tfrecords, compile_rnn_tfrecor
 from deep_draw.dl_logic.data import load_data_npy
 from deep_draw.dl_logic.params import format_data, max_items_per_class, test_size, learning_rate, patience, batch_size, epochs, validation_split
 from deep_draw.dl_logic.data import load_tfrecords_dataset
-from deep_draw.dl_logic.params import model_selection
-from deep_draw.dl_logic.registry import save_model, load_model, get_model_version
+from deep_draw.dl_logic.params import train_model_selection
+from deep_draw.dl_logic.registry import save_model, get_model_version
 import yaml
 from yaml.loader import SafeLoader
 
@@ -73,16 +73,16 @@ def preprocess_train_eval():
         dataset_test = load_tfrecords_dataset(source_type = 'test', batch_size=batch_size)
 
         # Open the file and load the file
-        if model_selection == 'rnn':
+        if train_model_selection == 'rnn':
             with open('../dl_logic/categories_rnn_50.yaml') as f:
                 class_names = yaml.load(f, Loader=SafeLoader)
-        elif model_selection == 'cnn':
+        elif train_model_selection == 'cnn':
             with open('../dl_logic/categories.yaml') as f:
                 class_names = yaml.load(f, Loader=SafeLoader)
 
         model = None
 
-        if model_selection == 'cnn':
+        if train_model_selection == 'cnn':
 
             if model is None:
                 model = initialize_cnn_tfrecords()
@@ -128,7 +128,7 @@ def preprocess_train_eval():
             accuracy_test = evaluate_cnn_tfrecords(model, dataset_test, batch_size=batch_size)['accuracy']
             save_model(params=params_test, metrics=dict(accuracy=accuracy_test))
 
-        if model_selection == 'rnn':
+        if train_model_selection == 'rnn':
             if model is None:
                 model = initialize_rnn_tfrecords()
             model = compile_rnn_tfrecords(model)
@@ -174,7 +174,7 @@ def preprocess_train_eval():
             accuracy_test = evaluate_rnn_tfrecords(model, dataset_test, batch_size=batch_size)['accuracy']
             save_model(params=params_test, metrics=dict(accuracy=accuracy_test))
 
-    return class_names
+    return model, class_names
 
 def pred(X_pred, select_model='cnn', model=None):
     y_pred = model.predict(X_pred)
@@ -199,7 +199,8 @@ def pred(X_pred, select_model='cnn', model=None):
     final_dict_stats = {c: v for c, v in sorted(final_dict_stats.items(),key=lambda item: item[1], reverse=True)}
     first_5_stats = dict(zip(list(final_dict_stats.keys())[:5], list(final_dict_stats.values())[:5]))
     first_5_stats = {k: round(v, 2) for k, v in first_5_stats.items()}
+
     return prediction, first_5_stats
 
 if __name__ == '__main__':
-    class_names = preprocess_train_eval()
+    model, class_names = preprocess_train_eval()
