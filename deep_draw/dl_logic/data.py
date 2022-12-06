@@ -7,8 +7,7 @@ from tensorflow.python.lib.io import file_io
 from yaml.loader import SafeLoader
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
-from tensorflow.keras.utils import to_categorical
-from deep_draw.dl_logic.params import NUM_CLASSES, batch_size, source_npy, storage_tfr, model_selection
+from deep_draw.dl_logic.params import batch_size, source_npy, storage_tfr, train_model_selection
 from google.cloud import storage
 
 def load_data_npy(test_size, max_items_per_class):
@@ -203,9 +202,9 @@ def get_dataset_multi(tfr_dir: str = "/content/", pattern: str = "*.tfrecords"):
     dataset = tf.data.TFRecordDataset(files)
 
     #pass every single feature through our mapping function
-    if model_selection == "cnn":
+    if train_model_selection == "cnn":
         dataset = dataset.map(parse_tfr_element)
-    if model_selection == "rnn":
+    if train_model_selection == "rnn":
         dataset = dataset.map(parse_tfexample_fn2)
 
     return dataset
@@ -219,14 +218,13 @@ def get_dataset_multi_gcs(files):
 def load_tfrecords_dataset(source_type = 'train', batch_size=32):
     # Load dataset
     if storage_tfr == 'local':
-        if model_selection == 'cnn':
+        if train_model_selection == 'cnn':
             dataset = get_dataset_multi(tfr_dir='../../raw_data/tfrecords/', pattern=f"*_{source_type}.tfrecords")
             dataset = dataset.batch(batch_size)
             dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32)/255.0, y))
-        if model_selection == 'rnn':
+        if train_model_selection == 'rnn':
             dataset = get_dataset_multi(tfr_dir='../../raw_data/tfrecords/', pattern=f"*_{source_type}.tfrecords")
             dataset = dataset.batch(batch_size)
-            #dataset = dataset.map(lambda x, y:(tf.cast(x, tf.float32), y))
 
     if storage_tfr == 'gcs':
         client = storage.Client(project='deep-draw-project')
