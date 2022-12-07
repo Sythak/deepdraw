@@ -1,7 +1,7 @@
 ## Context
 
 
-**Deep Draw** is a Le Wagon project from the batch Data Science n°1002 (sept-dec 2022). Initiated by Sébastien Hubert, the objective is to apply Deep Learning science and use a **CNN model** with the available [QuickDraw dataset](https://console.cloud.google.com/storage/browser/quickdraw_dataset/) from google. This allow guesses the sketche of a user among 100 categories of randomly chosen draws. To go further, a **RNN model** will also be tested.
+**Deep Draw** is a project from Le Wagon, batch Data Science n°1002 (sept-dec 2022). Initiated by Sébastien Hubert, the objective is to apply Deep Learning science and use a **CNN model** with the available [QuickDraw dataset](https://console.cloud.google.com/storage/browser/quickdraw_dataset/) from google. This allow guesses the sketche of an user among 100 categories of randomly chosen draws. To go further, a **RNN model** will also be tested.
 Sébastien was joined by Valentin Paris, Alexia Fraidenraich and Jean-Baptiste Guérin to work on the Deep-Draw project during theses 2 weeks working, supervized by Laure De Grave.
 
 <br>
@@ -27,8 +27,8 @@ Sébastien was joined by Valentin Paris, Alexia Fraidenraich and Jean-Baptiste G
 2. Downloading, loading and prepare the Quick Draw dataset for CNN Model
 3. Initialize and Run the CNN model
 4. Create an API and fast API with streamlit 👉 it Will be our user interface
-5. Put the model in production with MLflow
-6. Create a Docker container and
+5. Store the work with Mlflow
+6. Create a Docker container and push it in production with GCP
 7. Going further 👉 do the same with a sequential data and an RNN model
 
 
@@ -92,11 +92,11 @@ We create our working environment diagrammed by this tree directory
 
 ## 💻 Encoding dataset from bitmap to tfrecords
 
-For our CNN model, we will use the data in **.npy type** from QuickDraw dataset. This will alow us to use bitmap format for our image. One categorie (cats for exemple) contain **100 000 different draws** .
+For our CNN model, we use the data in **.npy type** from QuickDraw dataset. This allow us to use bitmap format for our images. One categorie (cats for exemple) contain **100 000 differents draws** .
 
 The real challenge is to load and run the model for at least **100 categories**, corresponding to **10 000 000 draws** !!! 🙊
 
-Thats' why we need to convert the data in an object tensorflow. With it, we can split the data into packs of draws and make the model. Then, we avoid the expecteds problemes from RAM memory.
+Thats' why we need to convert the data in an object tensorflow. With it, we can split the data into many packs of 32 draws and make the model easily and faster. Then, we can avoid the expected problemes from RAM memory.
 
 <br>
 
@@ -151,9 +151,23 @@ history = model.fit(dataset_train,
 ```
 <br>
 
+The accuracy obtained is around 80% which is sufficient for what we want to do with it.
+
+Here is a 3D visualize of our model
+
+<br>
+
+![visualkeras CNN layers](images/visualkeras_cnn-layer.png)
+
+<br>
+
 ## Modelisation results
 
-❌ try to link a jn part directly from show_convolution
+![plot confusion matrix](images/confusion-matrix_cnn.png)
+
+<br>
+
+![sample of classification report](images/sample_classif-report_cnn.png)
 
 <br>
 
