@@ -90,8 +90,6 @@ draw_f = print_title()
 st.markdown(f"<h1 style='text-align: left; color: grey;'>Draw me a {draw_f.title()}</h1>", unsafe_allow_html=True)
 
 
-
-
 col1, col2= st.columns([60,40])
 
 with col1:

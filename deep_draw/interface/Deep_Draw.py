@@ -13,7 +13,6 @@ import requests
 import base64
 from json import JSONEncoder
 
-
 if "none" not in st.session_state:
     st.session_state["none"]=True
     st.session_state['mobile']=False
