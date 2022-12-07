@@ -110,6 +110,7 @@ with col1:
         initial_drawing=None
     )
 
+
 #st.write(f'len canvas : {canvas_result.json_data["objects"][-1] if len(canvas_result.json_data["objects"])>0 else 0}')
 try:
     objects = pd.json_normalize(canvas_result.json_data["objects"])
