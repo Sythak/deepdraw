@@ -15,7 +15,7 @@ from json import JSONEncoder
 
 if "none" not in st.session_state:
     st.session_state["none"]=True
-    mobile=False
+    st.session_state['mobile']=False
 
 # Create a canvas component
 st.set_page_config(page_title="Deep Draw", page_icon="🎨", layout="centered")
@@ -24,7 +24,7 @@ st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', uns
 device = st.radio('', ('Computer', 'Mobile'))
 
 if device == 'Mobile':
-    mobile=True
+    st.session_state['mobile']=True
     gif='logo_le_wagon_mobile.gif'
     file_ = open(gif, "rb")
     contents = file_.read()
@@ -32,7 +32,7 @@ if device == 'Mobile':
     file_.close()
     gap='0px'
 else:
-    mobile=False
+    st.session_state['mobile']=False
     gif='logo_le_wagon.gif'
     file_ = open(gif, "rb")
     contents = file_.read()
