@@ -15,6 +15,7 @@ from json import JSONEncoder
 
 if "none" not in st.session_state:
     st.session_state["none"]=True
+    mobile=False
 
 @st.experimental_memo
 def print_title(a=0):
@@ -23,22 +24,42 @@ def print_title(a=0):
     return draw_to
 
 # Create a canvas component
-st.set_page_config(page_title="Deep Draw", page_icon="🎨", layout="centered")
+st.set_page_config(page_title="Deep Draw", page_icon="🎨", layout="wide")
+
+st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+device = st.radio('', ('Computer', 'Mobile'))
+
+if device == 'Mobile':
+    mobile=True
+    gap='0px'
+    ici='3'
+    align='center'
+else:
+    mobile=False
+    gap='4px'
+    ici='6'
+    align='left'
+
+
 draw_f = print_title()
 st.markdown(f"<h1 style='text-align: left; color: grey;'>Draw me a {draw_f.title()}</h1>", unsafe_allow_html=True)
 
-canvas_result = st_canvas(
-    fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
-    stroke_width=1,
-    stroke_color="#000",
-    background_color="#eee",
-    background_image=None,
-    update_streamlit=True,
-    height=600,
-    drawing_mode="freedraw",
-    point_display_radius=0,
-    key="canva1" if  st.session_state["none"] else "canva2",
-    initial_drawing=None,
+col1, col2= st.columns([60,40])
+
+with col1:
+    canvas_result = st_canvas(
+        fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
+        stroke_width=1,
+        stroke_color="#000",
+        background_color="#eee",
+        background_image=None,
+        update_streamlit=True,
+        height=340 if mobile else 480,
+        width=340 if mobile else 800,
+        drawing_mode="freedraw",
+        point_display_radius=0,
+        key=f'{"canva1" if st.session_state["none"] else "canva2"}{"1" if mobile else "2"}',
+        initial_drawing=None
 )
 try:
     if canvas_result.json_data is not None:
@@ -97,21 +118,30 @@ try:
         bitmap_format = np.array(vector_to_raster([strokes], side=28)).reshape(1, 28, 28, 1)
         json_to_api = image_to_dict(bitmap_format)
         json_to_api_2 = json.dumps(json_to_api)
-        url = 'https://deepdrawimagernncnn-do5ciztupa-ew.a.run.app/predict/'
+
         #url = 'https://deepdrawimage2-do5ciztupa-ew.a.run.app/predict/'
         #url = 'http://127.0.0.1:8000/predict'
-        if st.button('submit'):
-            with requests.Session() as s:
-                response = s.post(url, json_to_api_2)
-            st.markdown("""
-                <style>
-                .big-font {
-                    font-size:35px !important;
-                }
-                </style>
-                """, unsafe_allow_html=True)
 
-            st.markdown(f"<p class='big-font'>{response.json()['test'].title()}</p>", unsafe_allow_html=True)
+except:
+    pass
+
+with col2:
+    url = 'https://deepdrawimagernncnn-do5ciztupa-ew.a.run.app/predict/'
+    if st.button('Submit'):
+        with requests.Session() as s:
+            response = s.post(url, json_to_api_2)
+        st.markdown("""
+            <style>
+            .big-font {
+                font-size:35px !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
+        st.markdown(f"<p class='big-font'>I guessed: {response.json()['test'].title()}</p>", unsafe_allow_html=True)
+
+        if draw_f.title() == response.json()['test'].title():
+            st.balloons()
 
     @st.experimental_memo()
     def change_id():
@@ -119,11 +149,39 @@ try:
         st.experimental_memo.clear()
         print_title(5)
 
-    if draw_f.title() == response.json()['test'].title():
-        st.balloons()
-        if st.button("next", on_click=change_id):
-            pass
+    if st.button("Next ?", on_click=change_id):
+        pass
 
+st.markdown(
+    '''<style>   div[data-testid=“stHorizontalBlock”]  {gap:'''+
+    gap+
+    ''';    \}</style>''',
+    unsafe_allow_html=True,
+)
 
-except:
-    pass
+st.markdown(
+   '''<style>  div.css-18e3th9
+     {
+    padding: 1rem '''+ici+'''em 10rem; '''
+    ''';    }</style>''',
+    unsafe_allow_html=True,
+)
+
+st.markdown("""
+<style>
+div.stButton > button:first-child {
+    background-color: #EBC034;
+    color: Black;
+    font-weight : Bold;
+    border: 2px solid #EBC034;
+
+}
+</style>""", unsafe_allow_html=True)
+
+st.markdown(
+   '''<style>  div.css-fg4pbf
+     {
+    text-align: '''+align+'''; '''
+    ''';    }</style>''',
+    unsafe_allow_html=True,
+)
