@@ -26,3 +26,4 @@ python-multipart
 pyyaml
 mlflow~=1.26.1
 google-cloud-storage
+extra_streamlit_components
