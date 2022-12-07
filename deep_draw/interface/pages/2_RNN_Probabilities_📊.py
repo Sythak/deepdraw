@@ -103,7 +103,7 @@ with col1:
         background_color="#eee",
         background_image=None,
         update_streamlit=True,
-        height=340 if mobile else 500,
+        height=340 if mobile else 480,
         width=340 if mobile else 800,
         drawing_mode="freedraw",
         point_display_radius=0,
@@ -218,7 +218,7 @@ with col2:
         st.experimental_memo.clear()
         print_title(5)
 
-    if st.button("next", on_click=change_id):
+    if st.button("Next ?", on_click=change_id):
         pass
 
 st.markdown(
@@ -235,3 +235,14 @@ st.markdown(
     ''';    }</style>''',
     unsafe_allow_html=True,
 )
+
+st.markdown("""
+<style>
+div.stButton > button:first-child {
+    background-color: #EBC034;
+    color: Black;
+    font-weight : Bold;
+    border: 2px solid #EBC034;
+
+}
+</style>""", unsafe_allow_html=True)
