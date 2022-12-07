@@ -15,7 +15,9 @@ from json import JSONEncoder
 
 if "none" not in st.session_state:
     st.session_state["none"]=True
-    mobile=False
+
+if "mobile" not in st.session_state:
+    st.session_state['mobile']=False
 
 @st.experimental_memo
 def print_title(a=0):
@@ -75,15 +77,12 @@ def print_title(a=0):
 # Create a canvas component
 st.set_page_config(page_title="Deep Draw", page_icon="🎨", layout="wide")
 
-st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-device = st.radio('', ('Computer', 'Mobile'))
-
-if device == 'Mobile':
-    mobile=True
+if st.session_state['mobile']:
+    st.session_state['mobile']=True
     gap='0px'
     ici='3'
 else:
-    mobile=False
+    st.session_state['mobile']=False
     gap='4px'
     ici='6'
 
@@ -103,11 +102,11 @@ with col1:
         background_color="#eee",
         background_image=None,
         update_streamlit=True,
-        height=340 if mobile else 480,
-        width=340 if mobile else 800,
+        height=340 if st.session_state['mobile'] else 510,
+        width=340 if st.session_state['mobile'] else 800,
         drawing_mode="freedraw",
         point_display_radius=0,
-        key=f'{"canva1" if st.session_state["none"] else "canva2"}{"1" if mobile else "2"}',
+        key=f'{"canva1" if st.session_state["none"] else "canva2"}{"1" if st.session_state["mobile"] else "2"}',
         initial_drawing=None
     )
 
