@@ -1,27 +1,22 @@
 ## Context
 
+<br>
 
-**Deep Draw** is a project from Le Wagon, batch Data Science n°1002 (sept-dec 2022). Initiated by Sébastien Hubert, the objective is to apply Deep Learning science and use a **CNN model** with the available [QuickDraw dataset](https://console.cloud.google.com/storage/browser/quickdraw_dataset/) from google. This allow guesses the sketche of an user among 100 categories of randomly chosen draws. To go further, a **RNN model** will also be tested.
-Sébastien was joined by Valentin Paris, Alexia Fraidenraich and Jean-Baptiste Guérin to work on the Deep-Draw project during theses 2 weeks working, supervized by Laure De Grave.
+**Deep Draw** is a project from [Le wagon data science school](https://www.lewagon.com/data-science-course) in Paris, batch #1002 (Sept.-Dec. 2022). The objective is to develop, train and apply **neural networks models** on the [QuickDraw dataset](https://console.cloud.google.com/storage/browser/quickdraw_dataset/) published by [Google Creative Lab](https://github.com/googlecreativelab/quickdraw-dataset). 100 categories of sketches have been selected and were used to train a CNN-based model and a RNN-based model in order to categorize drawings.
 
 <br>
 
 ## Acknowledgments
 
-👉 Thanks to our supervizor **Laure De Grave** and our Lead Teacher **Vincent Moreau** for their help and investment on this project.
+👉 Thanks to our supervizor [Laure de Grave](https://github.com/casicoco) and our Lead Teacher [Vincent Moreau](https://github.com/vtmoreau) for their help and investment on this project.
 
 👉 Thanks to Google Creative Lab for the quickdraw-dataset from [googlecreativelab repository](https://github.com/googlecreativelab/quickdraw-dataset)
 
 [![Google Creative Lab - Github](images/googlecolab_logo.png)](https://github.com/googlecreativelab/quickdraw-dataset)
 
-👉 Thanks to Tensorflow for their repository about [Recurrent Neural Networks for Drawing Classification](https://github.com/tensorflow/docs/blob/master/site/en/r1/tutorials/sequences/recurrent_quickdraw.md)
-
-[![Tensorflow - Github](images/tensorflow_logo.png)](https://github.com/tensorflow)
-
-
 <br>
 
-## Objectives
+## Summary
 
 1. Initialize our [Repository Github for deepdraw](https://github.com/Sythak/deepdraw)
 2. Downloading, loading and prepare the Quick Draw dataset for CNN Model
@@ -36,7 +31,7 @@ Sébastien was joined by Valentin Paris, Alexia Fraidenraich and Jean-Baptiste G
 
 # 1️⃣ Project Setup 🛠
 
-## Deep-Draw directory
+## deepdraw directory
 
 We create our working environment diagrammed by this tree directory
 
@@ -88,9 +83,17 @@ We create our working environment diagrammed by this tree directory
 ```
 <br>
 
-# 2️⃣  CNN - Prepare the data 📡
+# 2️⃣  Preprocess the data 📡
 
-## 💻 Encoding dataset from bitmap to tfrecords
+<br>
+
+## Convolutional Neural Network model
+
+<br>
+
+### 💻 Encoding from bitmap format to tfrecords
+
+<br>
 
 For our CNN model, we use the data in **.npy type** from QuickDraw dataset. This allow us to use bitmap format for our images. One categorie (cats for exemple) contain **100 000 differents draws** .
 
@@ -100,11 +103,33 @@ Thats' why we need to convert the data in an object tensorflow. With it, we can 
 
 <br>
 
-# 3️⃣ Make and run the CNN model
+### 💻 Decoding from tfrecords to bitmap format
 
-## DeepLearning CNN Model - Our code
+<br>
 
-We have chosen a conventionnal CNN model
+## Recurrent Neural Network model
+
+<br>
+
+### 💻 Encoding from ndjson format to tfrecords
+
+<br>
+
+### 💻 Decoding from tfrecords to ndjson format
+
+<br>
+
+# 3️⃣ Make and run the models
+
+## CNN Model - initialize, compile and train
+
+<br>
+
+A conventionnal CNN model is initialized using the `initialize_cnn` method.
+Three **Conv2D** layers followed by three **MaxPooling2D** layers are used before the **Flatten** and **Dense** layers.
+The output layers uses the softmax activation function to predict 100 probabilities.
+
+The model is compiled using `compile_cnn`. An **Adam** optimizer, a **sparse categorical crossentropy** loss function and the **accuracy** metrics his monitored.
 
 ```python
 #Initialize a CNN Model
@@ -131,29 +156,12 @@ model.compile(
         optimizer='adam',
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy'])
-
-    print("\n✅ model compiled")
-    return model
-
-#Training
-
-es = EarlyStopping(monitor="val_loss",
-                  patience=patience,
-                  restore_best_weights=True,
-                  verbose=0)
-
-history = model.fit(dataset_train,
-                    validation_data = dataset_val,
-                    epochs = 100,
-                    batch_size = 32,
-                    callbacks = [es],
-                    verbose = 1)
 ```
 <br>
 
-The accuracy obtained is around 80% which is sufficient for what we want to do with it.
+The final accuracy is around 80% which is sufficient for categorizing sketches.
 
-Here is a 3D visualize of our model
+Here is a 3D visualization of the CNN model
 
 <br>
 
@@ -161,30 +169,31 @@ Here is a 3D visualize of our model
 
 <br>
 
-## Modelisation results
-
-![plot confusion matrix](images/confusion-matrix_cnn.png)
+### CNN Modelisation results
 
 <br>
 
-![sample of classification report](images/sample_classif-report_cnn.png)
+Here is the final confusion matrix and the final classification report.
 
 <br>
 
-## Show Convolution effect
+![plot confusion matrix of CNN](images/confusion-matrix_cnn.png)
 
 <br>
 
-Here, we will show you the convolution effect of our CNN model using conv2D layers.
-Let's take a sample of data : the first draws for theses 3 categories 🐱 🐷 🐸
+![sample of classification report of CNN](images/sample_classif-report_cnn.png)
+
+<br>
+
+## Activation map
+
+<br>
+
+the activation map shows how neurones specialize whithin the first Conv2D layer.
+3 examples from 3 categories 🐱 🐷 🐸 are represented bellow.
 <br>
 
 ![Sample of data encoded 🐱 🐷 🐸](images/bitmap_28*28.png)
-
-<br>
-
-
-We still reconize them right ? Just focus on the cat 🐱 and let's start with applying the **first convolution Layer** contain 16 kernels !
 
 <br>
 
@@ -193,36 +202,52 @@ We still reconize them right ? Just focus on the cat 🐱 and let's start with a
 
 <br>
 
-Here, we can observe that the last kernels takes more data than the first.
-
-💡 Spoiler Alert : it's the same pattern for all draws.
-To going further, let's see what happened if we add a **second convolution Layer** contain 32 kernels !
+## RNN Model - initialize, compile and train
 
 <br>
 
-![Cat picture with the second convolution layer effect](images/layer2_part1.png)
-![](images/layer2_part2.png)
-![](images/layer2_part3.png)
+The RNN model is initialized using the `initialize_rnn_tfrecords` method.
+
+One **Masking** layer followed by two **LSTM** layers are used before the **Dense** layer.
+The output layers uses the softmax activation function to predict 100 probabilities.
+
+The RNN model is compiled as the same way than Like the CNN model.
 
 <br>
 
-With this convolution, the model take more parts from the first draw. We can reconize the nose or the ears of the cat but the majority of the pictures start to be not understandable.
+```python
+#Initialize a RNN Model
 
-For fun, here is an extract from the output of the **third convolution Layer** contain 64 kernels !
+model = Sequential()
+
+    model.add(layers.Masking(mask_value=1000, input_shape=(1920,3)))
+    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= True))
+    model.add(layers.LSTM(units = 20, activation= 'tanh', return_sequences= False))
+
+    model.add(Dense(50, activation='relu'))
+    model.add(Dense(num_classes, activation = 'softmax'))
+```
 
 <br>
 
-![Sample of Cat picture with the third convolution layer effect](images/layer3_part1.png)
-![](images/layer3_part2.png)
+The final accuracy for the RNN model is around 75% which is sufficient for categorizing sketches.
 
 <br>
 
-Beautiful abstract art, isn't it ? 👩‍🎨
+### RNN Modelisation results
 
-<br/>
+<br>
 
-# 3️⃣ Making an API to manage the user interface with streamlite
+Here is the final confusion matrix and the final classification report.
 
-# 4️⃣ Machine Learning Operations : Dockers
+<br>
 
-# 5️⃣ Going Further : The RNN model
+![plot confusion matrix of RNN](images/confusion-matrix_rnn.png)
+
+<br>
+
+![sample of classification report of RNN](images/sample_classif-report_rnn.png)
+
+# 3️⃣ The streamlite interface
+
+# 4️⃣ Build an API using Dockers and Fast API
