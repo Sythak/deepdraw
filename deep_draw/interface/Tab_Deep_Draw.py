@@ -197,6 +197,9 @@ if chosen_id == "tab2":
     col1, col2= st.columns([60,40])
 
     with col1:
+
+        response = None
+
         canvas_result2 = st_canvas(
             fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
             stroke_width=1,
@@ -303,6 +306,9 @@ if chosen_id == "tab2":
                 tick.set_visible(False)
             st.pyplot(fig)
             del(dico)
+        if response is not None :
+            if (draw_f.title() == response.json()['test'].title()) and (list(response.json()['class'].values())[0] > 0.8):
+                    st.balloons()
 
         if st.button("Next ?", on_click=change_id, key='button1'):
             pass
@@ -374,6 +380,7 @@ elif chosen_id == "tab3":
     col1, col2= st.columns([60,40])
 
     with col1:
+        response = None
         canvas_result3 = st_canvas(
             fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
             stroke_width=1,
@@ -494,6 +501,10 @@ elif chosen_id == "tab3":
         #     st.session_state["none"]=not st.session_state["none"]
         #     st.experimental_memo.clear()
         #     print_title(5)
+
+        if response is not None :
+            if (draw_f.title() == response.json()['test'].title()) and (list(response.json()['class'].values())[0] > 0.8):
+                    st.balloons()
 
         if st.button("Next ?", on_click=change_id, key='button2'):
             pass
