@@ -62,10 +62,10 @@ else:
 
 
 chosen_id = stx.tab_bar(data=[
-    stx.TabBarItemData(id="tab1", title="🎨 Deep Draw!", description=""),
-    stx.TabBarItemData(id="tab2", title="📈 CNN Challenge", description=""),
-    stx.TabBarItemData(id="tab3", title="📊 RNN Challenge", description=""),
-    stx.TabBarItemData(id="tab4", title="🎮 Playground", description="")])
+    #stx.TabBarItemData(id="tab1", title="🎨 Deep Draw!", description=""),
+    stx.TabBarItemData(id="tab2", title="📈 CNN Challenge", description="Click here to start"),
+    stx.TabBarItemData(id="tab3", title="📊 RNN Challenge", description="Click here to start"),
+    stx.TabBarItemData(id="tab4", title="🎮 Playground", description="Click here to start")])
 
 #tab1, tab2, tab3, tab4 = st.tabs(["Deep Draw","CNN_Probabilities", "RNN_Probabilities", "Playground"])
 
@@ -307,7 +307,7 @@ if chosen_id == "tab2":
             st.pyplot(fig)
             del(dico)
         if response is not None :
-            if (draw_f.title() == response.json()['test'].title()) and (list(response.json()['class'].values())[0] > 0.8):
+            if (draw_f.title() == response.json()['test'].title()) and (list(response.json()['class'].values())[0] > 0.7):
                     st.balloons()
 
         if st.button("Next ?", on_click=change_id, key='button1'):
@@ -503,7 +503,7 @@ elif chosen_id == "tab3":
         #     print_title(5)
 
         if response is not None :
-            if (draw_f.title() == response.json()['test'].title()) and (list(response.json()['class'].values())[0] > 0.8):
+            if (draw_f.title() == response.json()['test'].title()) and (list(response.json()['class'].values())[0] > 0.7):
                     st.balloons()
 
         if st.button("Next ?", on_click=change_id, key='button2'):
