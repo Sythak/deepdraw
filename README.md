@@ -76,36 +76,23 @@ We create our working environment diagrammed by this tree directory
 
 <br>
 
-## Convolutional Neural Network model
+## Convolutional and Recurrent Neural Network models
 
 <br>
 
-### 💻 Encoding from bitmap format to tfrecords
+### 💻 Encoding data to tfrecords
 
 <br>
 
-For our CNN model, we use the data in **.npy type** from QuickDraw dataset. This allow us to use bitmap format for our images. One categorie (cats for exemple) contain **100 000 differents draws** .
+For our CNN model, we use the data in **.npy type** from QuickDraw dataset. This allows us to use bitmap format for our images. One categorie (cats for exemple) contains **100 000 differents draws** .
 
-The real challenge is to load and run the model for at least **100 categories**, corresponding to **10 000 000 draws** !!! 🙊
+The real challenge consists in loading and running the model for **100 categories**, corresponding to **10 000 000 drawingss** !!! 🙊
 
-Thats' why we need to convert the data in an object tensorflow. With it, we can split the data into many packs of 32 draws and make the model easily and faster. Then, we can avoid the expected problemes from RAM memory.
+That's why we convert the data in tensorflow object called tfrecord to optimize the memory usage.
 
-<br>
+A similar data preprocessing is used for the RNN model to encode tfrecords.
 
-### 💻 Decoding from tfrecords to bitmap format
-
-<br>
-
-## Recurrent Neural Network model
-
-<br>
-
-### 💻 Encoding from ndjson format to tfrecords
-
-<br>
-
-### 💻 Decoding from tfrecords to ndjson format
-
+The code needed to encode tfrecords from .npy opr ndjson format is in the `tfrecords.py` file.
 <br>
 
 # 3️⃣ Make and run the models
@@ -116,9 +103,9 @@ Thats' why we need to convert the data in an object tensorflow. With it, we can 
 
 A conventionnal CNN model is initialized using the `initialize_cnn` method.
 Three **Conv2D** layers followed by three **MaxPooling2D** layers are used before the **Flatten** and **Dense** layers.
-The output layers uses the softmax activation function to predict 100 probabilities.
+The output layer uses the softmax activation function to predict 100 probabilities.
 
-The model is compiled using `compile_cnn`. An **Adam** optimizer, a **sparse categorical crossentropy** loss function and the **accuracy** metrics his monitored.
+The model is compiled using `compile_cnn`. A simple **Adam** optimizer, a **sparse categorical crossentropy** loss function are used. The **accuracy** metrics is monitored.
 
 ```python
 #Initialize a CNN Model
@@ -148,7 +135,7 @@ model.compile(
 ```
 <br>
 
-The final accuracy is around 80% which is sufficient for categorizing sketches.
+The final accuracy lies around 80% which is sufficient for categorizing sketches.
 
 Here is a 3D visualization of the CNN model
 
@@ -178,8 +165,8 @@ Here is the final confusion matrix and the final classification report.
 
 <br>
 
-the activation map shows how neurones specialize whithin the first Conv2D layer.
-3 examples from 3 categories 🐱 🐷 🐸 are represented bellow.
+The activation map shows how the 16 filters of the first convolution layer specialized during training.
+3 examples from 3 categories of sketches 🐱 🐷 🐸 are represented bellow.
 <br>
 
 ![Sample of data encoded 🐱 🐷 🐸](images/bitmap_28*28.png)
@@ -219,7 +206,7 @@ model = Sequential()
 
 <br>
 
-The final accuracy for the RNN model is around 75% which is sufficient for categorizing sketches.
+The final accuracy for the RNN model lies around 75% which is sufficient for categorizing sketches.
 
 <br>
 
@@ -239,4 +226,5 @@ Here is the final confusion matrix and the final classification report.
 
 # 3️⃣ The streamlite interface
 
-# 4️⃣ Build an API using Dockers and Fast API
+Our streamlit front end can be accessed [here](https://deepdraw2.streamlit.app). For financial reasons, the API is not always running. It can be that you find it not working.
+
