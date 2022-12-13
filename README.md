@@ -37,48 +37,37 @@ We create our working environment diagrammed by this tree directory
 
 ```bash
 .
-├── Dockerfile                      # Contain our docker
+├── Dockerfile                      # Instructions to build the docker
 ├── Makefile                        # Task manager
 ├── README.md
-├── accueil_deep_draw.png
-├── build
-│   └── lib
-│       └── deep_draw
-│           └── fast_api.py
 ├── deep_draw                       # Main project directory
 │   ├── __init__.py
 │   ├── dl_logic                    # Deep-Learning classification directory
 │   │   ├── __init__.py
-│   │   ├── categories.yaml         # Listing of our choosen categories
+│   │   ├── categories.yaml         # Listing of our choosen 100 categories for CNN
+│   │   ├── categories_rnn_50.yaml  # Listing of our choosen 50 categories for RNN
 │   │   ├── cnn.py                  # CNN model
-│   │   ├── data.py                 # Loading , cleaning, encoding data
+│   │   ├── data.py                 # Loading, cleaning, encoding data
 │   │   ├── params.py               # Manage main variables
 │   │   ├── preprocessor.py         # Preprocessing data
 │   │   ├── registry.py             # Manage model
 │   │   ├── rnn.py                  # RNN model
-│   │   ├── test_categories.yaml
 │   │   ├── tfrecords.py            # Encoding data bitmap --> tfrecords obj
 │   │   └── utils.py
 │   ├── fast_api.py                 # Initialize API
 │   └── interface
-│       ├── Deep_Draw.py
+│       ├── Tab_Deep_Draw.py        # Streamlit front
 │       ├── __init__.py
-│       ├── accueil_deep_draw.png
-│       ├── app.py
-│       ├── main.py
-│       ├── pages
-│       │   ├── Probabilities_📊.py
-│       │   └── Submit_🎉.py
+│       ├── main.py                 
 │       └── utils.py
 ├── deep_draw.egg-info
-├── notebooks                       # Stockage notebooks
+├── notebooks                       # Jupyter notebooks for onboarding and key concepts
 ├── packages.txt
-├── raw_data                        # Stockage data
-│   ├── dataset.py
-│   ├── ndjson_simplified
+├── raw_data                        # Create this folder on your project version to locally store quickdraw data
 │   └── npy
+│   └── tfrecords
 ├── requirements.txt                # all the dependencies we need to run the package
-├── requirements_prod.txt
+├── requirements_prod.txt           # all the dependencies we need to run the package but for the docker
 └── setup.py                        # package installer
 ```
 <br>
