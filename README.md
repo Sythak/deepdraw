@@ -19,12 +19,12 @@
 ## Summary
 
 1. Initialize our [Repository Github for deepdraw](https://github.com/Sythak/deepdraw)
-2. Downloading, loading and prepare the Quick Draw dataset for CNN Model
-3. Initialize and Run the CNN model
-4. Create an API and fast API with streamlit 👉 it Will be our user interface
-5. Store the work with Mlflow
+2. Downloading, loading and prepare the Quick Draw dataset for CNN-based Model
+3. Initialize and run the CNN-based model
+4. Create an API and fast API with streamlit 👉 it will be our user interface
+5. Store the work on Mlflow
 6. Create a Docker container and push it in production with GCP
-7. Going further 👉 do the same with a sequential data and an RNN model
+7. Going further 👉 do the same with a sequential data and a RNN-based model
 
 
 <br>
